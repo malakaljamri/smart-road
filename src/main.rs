@@ -39,30 +39,4 @@ fn main() {
         sdl2_manager.canvas.clear();
         sdl2_manager.canvas.present();
     }
-
-    // Get the SDL2 event pump to handle window events
-    let mut event_pump = sdl2_manager
-        .sdl_context
-        .event_pump()
-        .expect("Failed to get event pump");
-
-    'running: loop {
-        // Handle events (like closing the window)
-        for event in event_pump.poll_iter() {
-            match event {
-                sdl2::event::Event::Quit { .. }
-                | sdl2::event::Event::KeyDown {
-                    keycode: Some(sdl2::keyboard::Keycode::Escape),
-                    ..
-                } => {
-                    break 'running;
-                }
-                _ => {}
-            }
-        }
-
-        // Clear and present the window each frame
-        sdl2_manager.clear().expect("Failed to clear screen");
-        sdl2_manager.present();
-    }
 }
