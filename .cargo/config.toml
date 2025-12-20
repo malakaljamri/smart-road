@@ -1,0 +1,8 @@
+# Cargo configuration for cross-platform builds
+
+# macOS: Set the library search path for Homebrew-installed SDL2
+[target.aarch64-apple-darwin]
+rustflags = ["-L", "/opt/homebrew/lib"]
+
+[target.x86_64-apple-darwin]
+rustflags = ["-L", "/opt/homebrew/lib", "-L", "/usr/local/lib"]

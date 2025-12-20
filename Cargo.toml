@@ -3,5 +3,11 @@ name = "smart-road"
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
+# Platform-specific SDL2 dependencies
+# macOS: Use Homebrew-installed SDL2
+[target.'cfg(target_os = "macos")'.dependencies]
 sdl2 = "0.38.0"
+
+# Linux and Windows: Use bundled SDL2 (compiles from source)
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+sdl2 = { version = "0.38.0", features = ["bundled"] }

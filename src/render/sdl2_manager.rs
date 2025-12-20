@@ -1,11 +1,9 @@
 use sdl2::Sdl;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
-use sdl2::video::WindowContext;
 
 pub struct Sdl2Manager {
     pub sdl_context: Sdl,
-    pub window: Window,
     pub canvas: Canvas<Window>,
 }
 
@@ -38,7 +36,6 @@ impl Sdl2Manager {
 
         Ok(Sdl2Manager {
             sdl_context,
-            window: canvas.window().clone(),
             canvas,
         })
     }
