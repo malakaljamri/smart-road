@@ -1,0 +1,36 @@
+<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="64" height="64" fill="#444"/>
+
+  <!-- Road -->
+  <rect x="5" y="0" width="54" height="64" fill="#222"/>
+
+  <!-- CENTER SOLID DIVIDER -->
+  <rect x="31" y="0" width="1" height="64" fill="#ff0"/>
+
+  <!-- LEFT SIDE LANE DIVIDERS (3 lanes) -->
+  <rect x="14" y="0" width="1" height="8" fill="#fff"/>
+  <rect x="14" y="16" width="1" height="8" fill="#fff"/>
+  <rect x="14" y="32" width="1" height="8" fill="#fff"/>
+  <rect x="14" y="48" width="1" height="8" fill="#fff"/>
+
+  <rect x="23" y="0" width="1" height="8" fill="#fff"/>
+  <rect x="23" y="16" width="1" height="8" fill="#fff"/>
+  <rect x="23" y="32" width="1" height="8" fill="#fff"/>
+  <rect x="23" y="48" width="1" height="8" fill="#fff"/>
+
+  <!-- RIGHT SIDE LANE DIVIDERS (3 lanes) -->
+  <rect x="39" y="0" width="1" height="8" fill="#fff"/>
+  <rect x="39" y="16" width="1" height="8" fill="#fff"/>
+  <rect x="39" y="32" width="1" height="8" fill="#fff"/>
+  <rect x="39" y="48" width="1" height="8" fill="#fff"/>
+
+  <rect x="48" y="0" width="1" height="8" fill="#fff"/>
+  <rect x="48" y="16" width="1" height="8" fill="#fff"/>
+  <rect x="48" y="32" width="1" height="8" fill="#fff"/>
+  <rect x="48" y="48" width="1" height="8" fill="#fff"/>
+
+  <!-- STOP LINE (only on left side lanes) -->
+  <rect x="5" y="62" width="26" height="2" fill="#fff"/>
+</svg>
+
