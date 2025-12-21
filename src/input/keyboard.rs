@@ -1,4 +1,5 @@
 use sdl2::keyboard::Keycode;
+use sim::types::Direction;
 
 pub struct InputHandler {
     pub quit: bool,
@@ -42,5 +43,19 @@ impl InputHandler {
         self.spawn_east = false;
         self.spawn_west = false;
         self.toggle_random = false;
+    }
+
+    pub fn get_direction(&self) -> Option<Direction> {
+        if self.spawn_north {
+            Some(Direction::North)
+        } else if self.spawn_south {
+            Some(Direction::South)
+        } else if self.spawn_east {
+            Some(Direction::East)
+        } else if self.spawn_west {
+            Some(Direction::West)
+        } else {
+            None
+        }
     }
 }
