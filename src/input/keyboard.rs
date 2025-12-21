@@ -35,4 +35,13 @@ impl InputHandler {
             _ => {}
         }
     }
+
+    pub fn reset(&mut self) {
+        self.show_stats = false;
+        self.spawn_north = false;
+        self.spawn_south = false;
+        self.spawn_east = false;
+        self.spawn_west = false;
+        self.toggle_random = false;
+    }
 }
