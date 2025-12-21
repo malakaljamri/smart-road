@@ -1,0 +1,38 @@
+use crate::sim::types::Direction;
+use sdl2::keyboard::Keycode;
+
+pub struct InputHandler {
+    pub quit: bool,
+    pub show_stats: bool,
+    pub spawn_north: bool,
+    pub spawn_south: bool,
+    pub spawn_east: bool,
+    pub spawn_west: bool,
+    pub toggle_random: bool,
+}
+
+impl InputHandler {
+    pub fn new() -> Self {
+        InputHandler {
+            quit: false,
+            show_stats: false,
+            spawn_north: false,
+            spawn_south: false,
+            spawn_east: false,
+            spawn_west: false,
+            toggle_random: false,
+        }
+    }
+
+    pub fn handle_keydown(&mut self, keycode: Keycode) {
+        match keycode {
+            Keycode::Escape => self.show_stats = true,
+            Keycode::Up => self.spawn_north = true,
+            Keycode::Down => self.spawn_south = true,
+            Keycode::Right => self.spawn_east = true,
+            Keycode::Left => self.spawn_west = true,
+            Keycode::R => self.toggle_random = true,
+            _ => {}
+        }
+    }
+}
