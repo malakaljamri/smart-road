@@ -1,4 +1,5 @@
-use crate::sim::{types::*, render::WorldPos};
+use crate::render::WorldPos;
+use crate::sim::types::{LaneId, VehicleState, VelocityLevel};
 
 pub struct Vehicle {
     pub id: u64,
