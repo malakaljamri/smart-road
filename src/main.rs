@@ -6,6 +6,7 @@ use crate::input::InputHandler;
 
 use render::Sdl2Manager;
 use sdl2::{
+    event,
     image::{InitFlag, LoadTexture},
     rect::Rect,
 };
@@ -22,11 +23,13 @@ fn main() {
 
     let mut input = InputHandler::new();
 
-    // Get the SDL2 event pump to handle window events
-    let mut event_pump = sdl2_manager
-        .sdl_context
-        .event_pump()
-        .expect("Failed to get event pump");
+    let mut event_pump = match sdl2_manager.sdl_context.event_pump() {
+        Ok(pump) => pump,
+        Err(e) => {
+            eprintln!("Failed to get event pump: {}", e);
+            return;
+        }
+    };
 
     'running: loop {
         // Handle events (like closing the window)
@@ -62,15 +65,25 @@ fn main() {
 
         // Create a texture from the vehicle PNG
         let texture_creator = sdl2_manager.canvas.texture_creator();
-        let vehicle_texture = texture_creator
-            .load_texture("assets/vehicles/east/car_24px_blue_3.png")
-            .expect("Failed to load vehicle PNG");
+        let vehicle_texture =
+            match texture_creator.load_texture("assets/vehicles/east/car_24px_blue_3.png") {
+                Ok(texture) => texture,
+                Err(e) => {
+                    eprintln!("Could not load vehicle PNG: {}", e);
+                    // Optionally: return, use a default texture, etc.
+                    continue; // skips drawing this frame
+                }
+            };
 
         // ...inside your main loop, after sdl2_manager.canvas.clear(); and before present():
-        sdl2_manager
-            .canvas
-            .copy(&vehicle_texture, None, Some(Rect::new(100, 100, 24, 24)))
-            .unwrap();
+        let _ = match sdl2_manager.canvas.copy(
+            &vehicle_texture,
+            None,
+            Some(Rect::new(100, 100, 24, 24)),
+        ) {
+            Ok(_) => {}
+            Err(e) => eprintln!("Could not copy texture to canvas: {}", e),
+        };
 
         sdl2_manager.canvas.present();
     }
