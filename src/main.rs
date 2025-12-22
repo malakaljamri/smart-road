@@ -5,6 +5,10 @@ mod sim;
 use crate::input::InputHandler;
 
 use render::Sdl2Manager;
+use sdl2::{
+    image::{InitFlag, LoadTexture},
+    rect::Rect,
+};
 
 fn main() {
     // Try to create the SDL2 manager (window size 800x600)
@@ -53,6 +57,21 @@ fn main() {
             .canvas
             .set_draw_color(sdl2::pixels::Color::RGB(255, 235, 59));
         sdl2_manager.canvas.clear();
+
+        let _image_context = sdl2::image::init(InitFlag::PNG).unwrap();
+
+        // Create a texture from the vehicle PNG
+        let texture_creator = sdl2_manager.canvas.texture_creator();
+        let vehicle_texture = texture_creator
+            .load_texture("assets/vehicles/east/car_24px_blue_3.png")
+            .expect("Failed to load vehicle PNG");
+
+        // ...inside your main loop, after sdl2_manager.canvas.clear(); and before present():
+        sdl2_manager
+            .canvas
+            .copy(&vehicle_texture, None, Some(Rect::new(100, 100, 24, 24)))
+            .unwrap();
+
         sdl2_manager.canvas.present();
     }
 }
