@@ -6,7 +6,6 @@ use crate::input::InputHandler;
 
 use render::Sdl2Manager;
 use sdl2::{
-    event,
     image::{InitFlag, LoadTexture},
     rect::Rect,
 };
