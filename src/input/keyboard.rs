@@ -1,5 +1,5 @@
+use crate::sim::types::Direction;
 use sdl2::keyboard::Keycode;
-use sim::types::Direction;
 
 pub struct InputHandler {
     pub quit: bool,

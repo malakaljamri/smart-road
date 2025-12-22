@@ -1,3 +1,8 @@
+mod input;
+mod sim;
+
+use input::keyboard::InputHandler;
+
 mod render;
 use render::Sdl2Manager;
 
@@ -11,6 +16,8 @@ fn main() {
         }
     };
 
+    let mut input = InputHandler::new();
+
     // Get the SDL2 event pump to handle window events
     let mut event_pump = sdl2_manager
         .sdl_context
@@ -19,17 +26,26 @@ fn main() {
 
     'running: loop {
         // Handle events (like closing the window)
+
+        input.reset();
+
         for event in event_pump.poll_iter() {
             match event {
-                sdl2::event::Event::Quit { .. }
-                | sdl2::event::Event::KeyDown {
-                    keycode: Some(sdl2::keyboard::Keycode::Escape),
+                sdl2::event::Event::Quit { .. } => {
+                    input.quit = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    keycode: Some(keycode),
                     ..
                 } => {
-                    break 'running;
+                    input.handle_keydown(keycode);
                 }
                 _ => {}
             }
+        }
+
+        if input.quit {
+            break 'running;
         }
 
         // Set the draw color to yellow and clear the window each frame

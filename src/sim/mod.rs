@@ -1,10 +1,10 @@
+pub mod conflict;
+pub mod intersections;
+pub mod statistics;
 pub mod types;
 pub mod vehicle;
-pub mod intersection;
-pub mod conflict;
-pub mod statistics;
 
+pub use intersections::Intersection;
+pub use statistics::Statistics;
 pub use types::*;
 pub use vehicle::Vehicle;
-pub use intersection::Intersection;
-pub use statistics::Statistics;

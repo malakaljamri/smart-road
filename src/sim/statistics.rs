@@ -1,4 +1,4 @@
-pub struct statistics {
+pub struct Statistics {
     pub vehicles_passed: u32,
     pub max_velocity: f32,
     pub min_velocity: f32,
