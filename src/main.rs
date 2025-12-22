@@ -2,7 +2,7 @@ mod input;
 mod render;
 mod sim;
 
-use input::keyboard::InputHandler;
+use crate::input::InputHandler;
 
 use render::Sdl2Manager;
 
