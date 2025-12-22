@@ -1,9 +1,9 @@
 mod input;
+mod render;
 mod sim;
 
 use input::keyboard::InputHandler;
 
-mod render;
 use render::Sdl2Manager;
 
 fn main() {
