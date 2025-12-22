@@ -8,6 +8,68 @@ All platforms require:
 
 - Rust (latest stable version) - Install from [rustup.rs](https://rustup.rs/)
 
+## PNG Image Support (sdl2_image)
+
+To load and display PNG images (such as vehicle sprites), you need the `sdl2_image` library and the Rust `sdl2` crate with the `image` feature enabled.
+
+### Install sdl2_image (native library)
+
+#### macOS
+
+```sh
+brew install sdl2_image
+```
+
+#### Ubuntu/Debian
+
+```sh
+sudo apt-get install libsdl2-image-2.0-0 libsdl2-image-dev
+```
+
+#### Fedora
+
+```sh
+sudo dnf install SDL2_image SDL2_image-devel
+```
+
+#### Arch
+
+```sh
+sudo pacman -S sdl2_image
+```
+
+#### Windows
+
+If using MSYS2:
+
+```sh
+pacman -S mingw-w64-x86_64-SDL2_image
+```
+
+If using Visual Studio, download SDL2_image from the [SDL website](https://www.libsdl.org/projects/SDL_image/) and follow their instructions.
+
+### Cargo.toml
+
+Add this to your dependencies:
+
+```toml
+sdl2 = { version = "0.35", features = ["image"] }
+```
+
+### Example Usage
+
+```rust
+use sdl2::image::{InitFlag, LoadTexture};
+use sdl2::rect::Rect;
+
+let _image_context = sdl2::image::init(InitFlag::PNG).unwrap();
+let texture_creator = canvas.texture_creator();
+let texture = texture_creator.load_texture("assets/vehicles/east/car_24px_blue_3.png").unwrap();
+canvas.copy(&texture, None, Some(Rect::new(100, 100, 24, 24))).unwrap();
+```
+
+This will draw a PNG vehicle sprite at position (100, 100).
+
 ## Platform-Specific Setup
 
 ### macOS
