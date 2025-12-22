@@ -26,7 +26,10 @@ impl InputHandler {
 
     pub fn handle_keydown(&mut self, keycode: Keycode) {
         match keycode {
-            Keycode::Escape => self.show_stats = true,
+            Keycode::Escape => {
+                self.show_stats = true;
+                self.quit = true;
+            }
             Keycode::Up => self.spawn_north = true,
             Keycode::Down => self.spawn_south = true,
             Keycode::Right => self.spawn_east = true,
