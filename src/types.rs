@@ -6,12 +6,21 @@ pub enum Direction {
     West,
 }
 
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
+pub enum VehicleColor {
+    Blue,
+    Green,
+    Pink,
+    Yellow,
+}
+
 pub struct Vehicle {
     pub id: usize,
     pub x: f32,
     pub y: f32,
     pub direction: Direction,
     pub state: VehicleState,
+    pub color: VehicleColor,
     pub speed: f32,
 }
 
