@@ -12,6 +12,7 @@ pub struct Vehicle {
     pub y: f32,
     pub direction: Direction,
     pub state: VehicleState,
+    pub speed: f32,
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]

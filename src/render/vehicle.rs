@@ -6,6 +6,7 @@ impl Vehicle {
             id,
             x,
             y,
+            speed: 1.0,
             direction,
             state: VehicleState::Approaching,
         }
@@ -14,10 +15,10 @@ impl Vehicle {
     pub fn update(&mut self) {
         // Test movement logic: move the vehicle in its direction
         match self.direction {
-            Direction::North => self.y -= 2.0,
-            Direction::South => self.y += 2.0,
-            Direction::East => self.x += 2.0,
-            Direction::West => self.x -= 2.0,
+            Direction::North => self.y -= self.speed,
+            Direction::South => self.y += self.speed,
+            Direction::East => self.x += self.speed,
+            Direction::West => self.x -= self.speed,
         }
     }
 }
