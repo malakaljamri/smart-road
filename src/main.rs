@@ -188,6 +188,7 @@ fn main() {
             .load_texture("assets/vehicles/north/car_24px_blue_2.png")
             .unwrap();
 
+        // update and draw vehicles
         for vehicle in &mut vehicles {
             vehicle.update();
         }
