@@ -185,7 +185,7 @@ fn main() {
         // use texture creator to draw vehicles
         let texture_creator = sdl2_manager.canvas.texture_creator();
         let vehicle_texture = texture_creator
-            .load_texture("assets/vehicles/south/car_24px_blue_4.png")
+            .load_texture("assets/vehicles/north/car_24px_blue_2.png")
             .unwrap();
 
         for vehicle in &mut vehicles {
