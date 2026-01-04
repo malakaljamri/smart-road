@@ -184,6 +184,7 @@ fn main() {
         let _image_context = sdl2::image::init(InitFlag::PNG).unwrap();
 
         // use texture creator to draw vehicles
+        //TODO: load different textures based on vehicle direction and type
         let texture_creator = sdl2_manager.canvas.texture_creator();
         let vehicle_texture = texture_creator
             .load_texture("assets/vehicles/north/car_24px_blue_2.png")
