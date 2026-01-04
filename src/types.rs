@@ -14,16 +14,6 @@ pub enum VehicleColor {
     Yellow,
 }
 
-pub struct Vehicle {
-    pub id: usize,
-    pub x: f32,
-    pub y: f32,
-    pub direction: Direction,
-    pub state: VehicleState,
-    pub color: VehicleColor,
-    pub speed: f32,
-}
-
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub enum VehicleState {
     Approaching,

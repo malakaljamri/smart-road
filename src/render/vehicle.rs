@@ -1,5 +1,15 @@
-use crate::types::{Direction, Vehicle, VehicleColor, VehicleState};
+use crate::types::{Direction, VehicleColor, VehicleState};
 use rand::Rng;
+
+pub struct Vehicle {
+    pub id: usize,
+    pub x: f32,
+    pub y: f32,
+    pub direction: Direction,
+    pub state: VehicleState,
+    pub color: VehicleColor,
+    pub speed: f32,
+}
 
 impl Vehicle {
     pub fn new(id: usize, x: f32, y: f32, direction: Direction) -> Self {

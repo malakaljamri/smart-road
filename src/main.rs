@@ -3,13 +3,12 @@ mod render;
 mod types;
 
 use crate::input::InputHandler;
-use render::Sdl2Manager;
+use render::{Sdl2Manager, Vehicle};
 use sdl2::{
     image::{InitFlag, LoadTexture},
     pixels::Color,
     rect::{Point, Rect},
 };
-use types::Vehicle;
 
 fn main() {
     let mut vehicles: Vec<Vehicle> = Vec::new();
