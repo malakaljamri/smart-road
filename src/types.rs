@@ -5,3 +5,11 @@ pub enum Direction {
     East,
     West,
 }
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
+pub enum VehicleState {
+    Approaching,
+    Waiting,
+    Crossing,
+    Exiting,
+}
