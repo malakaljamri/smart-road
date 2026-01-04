@@ -1,12 +1,4 @@
-use crate::types::{Direction, VehicleState};
-
-pub struct Vehicle {
-    pub id: usize,
-    pub x: f32,
-    pub y: f32,
-    pub direction: Direction,
-    pub state: VehicleState,
-}
+use crate::types::{Direction, Vehicle, VehicleState};
 
 impl Vehicle {
     pub fn new(id: usize, x: f32, y: f32, direction: Direction) -> Self {
@@ -20,6 +12,12 @@ impl Vehicle {
     }
 
     pub fn update(&mut self) {
-        // update logic here
+        // Test movement logic: move the vehicle in its direction
+        match self.direction {
+            Direction::North => self.y -= 2.0,
+            Direction::South => self.y += 2.0,
+            Direction::East => self.x += 2.0,
+            Direction::West => self.x -= 2.0,
+        }
     }
 }

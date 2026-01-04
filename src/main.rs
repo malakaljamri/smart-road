@@ -3,15 +3,17 @@ mod render;
 mod types;
 
 use crate::input::InputHandler;
-
 use render::Sdl2Manager;
 use sdl2::{
     image::{InitFlag, LoadTexture},
     pixels::Color,
     rect::{Point, Rect},
 };
+use types::Vehicle;
 
 fn main() {
+    let mut vehicles: Vec<Vehicle> = Vec::new();
+
     // Try to create the SDL2 manager (window size 800x600)
     let mut sdl2_manager = Sdl2Manager::new("Smart Road", 800, 800)
         .unwrap_or_else(|e| panic!("Failed to initialize SDL2: {}", e));
@@ -45,6 +47,13 @@ fn main() {
 
         if input.quit {
             break 'running;
+        }
+
+        // south to north
+        if input.spawn_south {
+            println!("Spawn vehicle from south to north");
+            let vehicle = Vehicle::new(vehicles.len(), 365.0, 800.0, types::Direction::North);
+            vehicles.push(vehicle);
         }
 
         // Set the draw color to yellow and clear the window each frame
@@ -173,18 +182,26 @@ fn main() {
 
         let _image_context = sdl2::image::init(InitFlag::PNG).unwrap();
 
-        // Create a texture from the vehicle PNG
+        // use texture creator to draw vehicles
         let texture_creator = sdl2_manager.canvas.texture_creator();
-
         let vehicle_texture = texture_creator
-            .load_texture("assets/vehicles/east/car_24px_blue_3.png")
+            .load_texture("assets/vehicles/south/car_24px_blue_4.png")
             .unwrap();
 
-        // ...inside your main loop, after sdl2_manager.canvas.clear(); and before present():
-        sdl2_manager
-            .canvas
-            .copy(&vehicle_texture, None, Some(Rect::new(100, 402, 30, 30)))
-            .unwrap();
+        for vehicle in &mut vehicles {
+            vehicle.update();
+        }
+
+        for vehicle in &vehicles {
+            sdl2_manager
+                .canvas
+                .copy(
+                    &vehicle_texture,
+                    None,
+                    Some(Rect::new(vehicle.x as i32, vehicle.y as i32, 30, 30)),
+                )
+                .unwrap();
+        }
 
         sdl2_manager.canvas.present();
     }
