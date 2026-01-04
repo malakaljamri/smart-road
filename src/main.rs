@@ -37,6 +37,7 @@ fn main() {
                 }
                 sdl2::event::Event::KeyDown {
                     keycode: Some(keycode),
+                    //? may need to add repeat flag check here to avoid spawning multiple vehicles on key hold
                     ..
                 } => {
                     input.handle_keydown(keycode);
