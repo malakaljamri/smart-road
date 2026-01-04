@@ -1,4 +1,4 @@
-use crate::types::Direction;
+// use crate::types::Direction;
 use sdl2::keyboard::Keycode;
 
 pub struct InputHandler {
