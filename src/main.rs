@@ -17,6 +17,9 @@ fn main() {
     let mut sdl2_manager = Sdl2Manager::new("Smart Road", 800, 800)
         .unwrap_or_else(|e| panic!("Failed to initialize SDL2: {}", e));
 
+    let ttf_context = sdl2::ttf::init().unwrap();
+    let font = ttf_context.load_font("assets/fonts/Arial.ttf", 24).unwrap();
+
     let mut input = InputHandler::new();
 
     let mut event_pump = sdl2_manager
@@ -74,6 +77,24 @@ fn main() {
         sdl2_manager.canvas.fill_rect(top_right).unwrap();
         sdl2_manager.canvas.fill_rect(bottom_left).unwrap();
         sdl2_manager.canvas.fill_rect(bottom_right).unwrap();
+
+        //* Font and text */
+        let text_surface = font.render("Smart Road").blended(Color::BLACK).unwrap();
+        let texture_creator = sdl2_manager.canvas.texture_creator();
+        let text_texture = texture_creator
+            .create_texture_from_surface(&text_surface)
+            .unwrap();
+
+        let target = Rect::new(
+            800 / 2 - (text_surface.width() as i32) / 2,
+            400 - (text_surface.height() as i32) / 2,
+            text_surface.width(),
+            text_surface.height(),
+        );
+        sdl2_manager
+            .canvas
+            .copy(&text_texture, None, Some(target))
+            .unwrap();
 
         // draw lanes
         // top

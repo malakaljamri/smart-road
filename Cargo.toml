@@ -9,8 +9,8 @@ rand = "0.8"
 # Platform-specific SDL2 dependencies
 # macOS: Use Homebrew-installed SDL2
 [target.'cfg(target_os = "macos")'.dependencies]
-sdl2 = { version = "0.38.0", features = ["image"] }
+sdl2 = { version = "0.38.0", features = ["image", "ttf"] }
 
 # Linux and Windows: Use bundled SDL2 (compiles from source)
 [target.'cfg(not(target_os = "macos"))'.dependencies]
-sdl2 = { version = "0.38.0", features = ["bundled", "image"] }
+sdl2 = { version = "0.38.0", features = ["bundled", "image", "ttf"] }
