@@ -2,10 +2,10 @@ mod input;
 mod render;
 mod types;
 
-use crate::input::InputHandler;
+use crate::{input::InputHandler, render::TextureCache};
 use render::{Sdl2Manager, Vehicle};
 use sdl2::{
-    image::{InitFlag, LoadTexture},
+    image::{InitFlag},
     pixels::Color,
     rect::{Point, Rect},
 };
@@ -18,6 +18,7 @@ fn main() {
         .unwrap_or_else(|e| panic!("Failed to initialize SDL2: {}", e));
 
     let ttf_context = sdl2::ttf::init().unwrap();
+    let _image_context = sdl2::image::init(InitFlag::PNG).expect("Failed to initialize SDL_image");
     let font = ttf_context.load_font("assets/fonts/Arial.ttf", 24).unwrap();
 
     let mut input = InputHandler::new();
@@ -26,6 +27,10 @@ fn main() {
         .sdl_context
         .event_pump()
         .unwrap_or_else(|_| panic!("Failed to get SDL2 event pump"));
+
+    // use texture creator to draw vehicles
+    let texture_creator = sdl2_manager.canvas.texture_creator();
+    let texture_cache = TextureCache::new(&texture_creator);
 
     'running: loop {
         // Handle events (like closing the window)
@@ -201,19 +206,13 @@ fn main() {
             .draw_line(Point::new(505, 295), Point::new(505, 400)) // stop
             .unwrap();
 
-        let _image_context = sdl2::image::init(InitFlag::PNG).unwrap();
-
         // update vehicles
         for vehicle in &mut vehicles {
             vehicle.update();
         }
 
-        // use texture creator to draw vehicles
-        let texture_creator = sdl2_manager.canvas.texture_creator();
-
         for vehicle in &vehicles {
-            let texture_path = vehicle.get_texture_path();
-            let vehicle_texture = texture_creator.load_texture(texture_path.as_str()).unwrap();
+            let vehicle_texture = texture_cache.get(vehicle.color, vehicle.direction);
 
             sdl2_manager
                 .canvas
