@@ -1,4 +1,4 @@
-#[derive(Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Direction {
     North,
     South,
@@ -6,7 +6,7 @@ pub enum Direction {
     West,
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum VehicleColor {
     Blue,
     Green,
@@ -14,10 +14,22 @@ pub enum VehicleColor {
     Yellow,
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum VehicleState {
     Approaching,
     Waiting,
     Crossing,
     Exiting,
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+pub struct Lane {
+    pub from: Direction,
+    pub to: Direction,
+}
+
+impl Lane {
+    pub fn set(from: Direction, to: Direction) -> Self {
+        Lane { from, to }
+    }
 }
