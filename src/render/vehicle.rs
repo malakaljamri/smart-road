@@ -1,10 +1,12 @@
-use crate::types::{Direction, VehicleColor, VehicleState};
+use crate::types::{Direction, Lane, VehicleColor, VehicleState};
 use rand::Rng;
 
+#[derive(Debug)]
 pub struct Vehicle {
     pub id: usize,
     pub x: f32,
     pub y: f32,
+    pub lane: Lane,
     pub direction: Direction,
     pub state: VehicleState,
     pub color: VehicleColor,
@@ -12,13 +14,20 @@ pub struct Vehicle {
 }
 
 impl Vehicle {
-    pub fn new(id: usize, x: f32, y: f32, direction: Direction) -> Self {
+    pub fn new(id: usize, x: f32, y: f32, lane: Lane) -> Self {
         let mut rng = rand::thread_rng();
         let random_color = match rng.gen_range(0..4) {
             0 => VehicleColor::Blue,
             1 => VehicleColor::Green,
             2 => VehicleColor::Pink,
             _ => VehicleColor::Yellow,
+        };
+
+        let start_dir = match lane.from {
+            Direction::North => Direction::South,
+            Direction::East => Direction::West,
+            Direction::South => Direction::North,
+            Direction::West => Direction::East,
         };
 
         Vehicle {
@@ -28,7 +37,8 @@ impl Vehicle {
             //TODO: Adjust speed based on project requirements
             speed: 1.0,
             color: random_color,
-            direction,
+            direction: start_dir,
+            lane,
             state: VehicleState::Approaching,
         }
     }

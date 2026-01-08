@@ -2,13 +2,22 @@ mod input;
 mod render;
 mod types;
 
-use crate::{input::InputHandler, render::TextureCache};
+use crate::{
+    input::InputHandler,
+    render::TextureCache,
+    types::{Direction, Lane},
+};
+use rand::Rng;
 use render::{Sdl2Manager, Vehicle};
 use sdl2::{
-    image::{InitFlag},
+    image::InitFlag,
     pixels::Color,
     rect::{Point, Rect},
 };
+
+// lane width = 35px
+// lane height = 295px
+// car width = 30px
 
 fn main() {
     let mut vehicles: Vec<Vehicle> = Vec::new();
@@ -31,6 +40,8 @@ fn main() {
     // use texture creator to draw vehicles
     let texture_creator = sdl2_manager.canvas.texture_creator();
     let texture_cache = TextureCache::new(&texture_creator);
+
+    let mut rng = rand::thread_rng();
 
     'running: loop {
         // Handle events (like closing the window)
@@ -59,8 +70,16 @@ fn main() {
 
         // south to north
         if input.spawn_south {
-            println!("Spawn vehicle from south to north");
-            let vehicle = Vehicle::new(vehicles.len(), 365.0, 800.0, types::Direction::North);
+            let (random_dir, x) = match rng.gen_range(0..3) {
+                0 => (Direction::East, 472.5),
+                1 => (Direction::West, 402.5),
+                _ => (Direction::North, 437.5),
+            };
+            // println!("Spawn vehicle from south to {:?}", random_dir);
+
+            let lane = Lane::set(types::Direction::South, random_dir);
+            let vehicle = Vehicle::new(vehicles.len(), x, 800.0, lane);
+            println!("vehicle: {:?}", vehicle);
             vehicles.push(vehicle);
         }
 
