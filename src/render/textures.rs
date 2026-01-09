@@ -2,10 +2,10 @@ use crate::types::{Direction, VehicleColor};
 use sdl2::{image::LoadTexture, render::Texture};
 use std::collections::HashMap;
 
-type TeextureKey = (VehicleColor, Direction);
+type TextureKey = (VehicleColor, Direction);
 
 pub struct TextureCache<'a> {
-    textures: HashMap<TeextureKey, Texture<'a>>,
+    textures: HashMap<TextureKey, Texture<'a>>,
 }
 
 impl<'a> TextureCache<'a> {
@@ -51,7 +51,7 @@ impl<'a> TextureCache<'a> {
         Self { textures }
     }
 
-    pub fn get(&self, color: VehicleColor, direction: Direction) -> &Texture {
+    pub fn get(&self, color: VehicleColor, direction: Direction) -> &Texture<'a> {
         &self.textures[&(color, direction)]
     }
 }
