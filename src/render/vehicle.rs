@@ -1,4 +1,5 @@
-use crate::types::{Direction, Lane, VehicleColor, VehicleState};
+use crate::intersection::Lane;
+use crate::types::{Direction, VehicleColor, VehicleState};
 use rand::Rng;
 
 #[derive(Debug)]

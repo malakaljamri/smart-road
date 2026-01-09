@@ -1,12 +1,10 @@
 mod input;
+mod intersection;
 mod render;
 mod types;
 
-use crate::{
-    input::InputHandler,
-    render::TextureCache,
-    types::{Direction, Lane},
-};
+use crate::{input::InputHandler, render::TextureCache, types::Direction};
+use intersection::Lane;
 use rand::Rng;
 use render::{Sdl2Manager, Vehicle};
 use sdl2::{
