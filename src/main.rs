@@ -3,7 +3,7 @@ mod intersection;
 mod render;
 mod types;
 
-use crate::{input::InputHandler, render::TextureCache, types::Direction};
+use crate::{input::InputHandler, render::Statistics, render::TextureCache, types::Direction};
 use intersection::Lane;
 use rand::Rng;
 use render::{Sdl2Manager, Vehicle};
@@ -21,6 +21,9 @@ fn main() {
     sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "1");
 
     let mut vehicles: Vec<Vehicle> = Vec::new();
+
+    // Not fully used yet pending statistics implementation
+    let mut statistics = Statistics::new();
 
     // Try to create the SDL2 manager (window size 800x600)
     let mut sdl2_manager = Sdl2Manager::new("Smart Road", 800, 800)
@@ -42,30 +45,48 @@ fn main() {
     let texture_cache = TextureCache::new(&texture_creator);
 
     let mut rng = rand::thread_rng();
+    let mut showing_stats = false;
 
     'running: loop {
         // Handle events (like closing the window)
-
-        input.reset();
+        if !showing_stats {
+            input.reset();
+        }
 
         for event in event_pump.poll_iter() {
             match event {
                 sdl2::event::Event::Quit { .. } => {
-                    input.quit = true;
+                    break 'running;
                 }
                 sdl2::event::Event::KeyDown {
                     keycode: Some(keycode),
                     //? may need to add repeat flag check here to avoid spawning multiple vehicles on key hold
                     ..
                 } => {
-                    input.handle_keydown(keycode);
+                    if showing_stats {
+                        // If showing stats, ESC or any key exits
+                        if keycode == sdl2::keyboard::Keycode::Escape {
+                            break 'running;
+                        }
+                    } else {
+                        input.handle_keydown(keycode);
+                    }
                 }
                 _ => {}
             }
         }
 
-        if input.quit {
-            break 'running;
+        if input.quit && !showing_stats {
+            showing_stats = true;
+        }
+
+        if showing_stats {
+            // Render stats and wait for close
+            statistics.render_stats(&mut sdl2_manager.canvas, &font);
+            sdl2_manager.canvas.present();
+            // Prevent high CPU usage while showing stats
+            std::thread::sleep(std::time::Duration::from_millis(16));
+            continue;
         }
 
         // south to north

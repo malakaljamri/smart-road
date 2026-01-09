@@ -6,3 +6,6 @@ pub use vehicle::*;
 
 pub mod textures;
 pub use textures::*;
+
+pub mod statistics;
+pub use statistics::*;

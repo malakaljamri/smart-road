@@ -3,7 +3,6 @@ use sdl2::keyboard::Keycode;
 
 pub struct InputHandler {
     pub quit: bool,
-    pub show_stats: bool,
     pub spawn_north: bool,
     pub spawn_south: bool,
     pub spawn_east: bool,
@@ -15,7 +14,6 @@ impl InputHandler {
     pub fn new() -> Self {
         InputHandler {
             quit: false,
-            show_stats: false,
             spawn_north: false,
             spawn_south: false,
             spawn_east: false,
@@ -26,10 +24,7 @@ impl InputHandler {
 
     pub fn handle_keydown(&mut self, keycode: Keycode) {
         match keycode {
-            Keycode::Escape => {
-                self.show_stats = true;
-                self.quit = true;
-            }
+            Keycode::Escape => self.quit = true,
             Keycode::Up => self.spawn_north = true,
             Keycode::Down => self.spawn_south = true,
             Keycode::Right => self.spawn_east = true,
@@ -40,7 +35,6 @@ impl InputHandler {
     }
 
     pub fn reset(&mut self) {
-        self.show_stats = false;
         self.spawn_north = false;
         self.spawn_south = false;
         self.spawn_east = false;
