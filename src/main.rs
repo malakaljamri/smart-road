@@ -18,6 +18,8 @@ use sdl2::{
 // car width = 30px
 
 fn main() {
+    sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "1");
+
     let mut vehicles: Vec<Vehicle> = Vec::new();
 
     // Try to create the SDL2 manager (window size 800x600)
