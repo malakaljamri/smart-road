@@ -14,18 +14,22 @@ impl<'a> TextureCache<'a> {
     ) -> Self {
         let mut textures = HashMap::new();
 
-        for color in [
+        let colors = [
             VehicleColor::Blue,
             VehicleColor::Green,
             VehicleColor::Pink,
             VehicleColor::Yellow,
-        ] {
-            for direction in [
-                Direction::East,
-                Direction::North,
-                Direction::South,
-                Direction::West,
-            ] {
+        ];
+
+        let directions = [
+            Direction::East,
+            Direction::North,
+            Direction::South,
+            Direction::West,
+        ];
+
+        for color in colors {
+            for direction in directions {
                 let direction_str = match direction {
                     Direction::North => "north",
                     Direction::South => "south",
