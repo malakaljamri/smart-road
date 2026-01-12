@@ -1,3 +1,5 @@
+use crate::render::sdl2_manager::Sdl2Manager;
+
 pub struct Statistics {
     pub max_vehicles_passed: usize,
     pub max_velocity: f32,
@@ -19,11 +21,7 @@ impl Statistics {
         }
     }
 
-    pub fn render_stats(
-        &self,
-        sdl2_manager: &mut crate::render::sdl2_manager::Sdl2Manager,
-        font: &sdl2::ttf::Font,
-    ) {
+    pub fn render_stats(&self, sdl2_manager: &mut Sdl2Manager, font: &sdl2::ttf::Font) {
         sdl2_manager.clear().unwrap();
 
         let stats_lines = vec![
