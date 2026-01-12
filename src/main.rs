@@ -104,6 +104,51 @@ fn main() {
             vehicles.push(vehicle);
         }
 
+        // north to south
+        if input.spawn_north {
+            let (random_dir, x) = match rng.gen_range(0..3) {
+                0 => (Direction::East, 365.0),
+                1 => (Direction::West, 295.0),
+                _ => (Direction::South, 330.0),
+            };
+            // println!("Spawn vehicle from north to {:?}", random_dir);
+
+            let lane = Lane::set(types::Direction::North, random_dir);
+            let vehicle = Vehicle::new(vehicles.len(), x, 0.0, lane);
+            println!("vehicle: {:?}", vehicle);
+            vehicles.push(vehicle);
+        }
+
+        // east to west
+        if input.spawn_east {
+            let (random_dir, y) = match rng.gen_range(0..3) {
+                0 => (Direction::North, 295.0),
+                1 => (Direction::South, 365.0),
+                _ => (Direction::West, 330.0),
+            };
+            // println!("Spawn vehicle from east to {:?}", random_dir);
+
+            let lane = Lane::set(types::Direction::East, random_dir);
+            let vehicle = Vehicle::new(vehicles.len(), 800.0, y, lane);
+            println!("vehicle: {:?}", vehicle);
+            vehicles.push(vehicle);
+        }
+
+        // west to east
+        if input.spawn_west {
+            let (random_dir, y) = match rng.gen_range(0..3) {
+                0 => (Direction::North, 402.5),
+                1 => (Direction::South, 472.5),
+                _ => (Direction::East, 437.5),
+            };
+            // println!("Spawn vehicle from west to {:?}", random_dir);
+
+            let lane = Lane::set(types::Direction::West, random_dir);
+            let vehicle = Vehicle::new(vehicles.len(), 0.0, y, lane);
+            println!("vehicle: {:?}", vehicle);
+            vehicles.push(vehicle);
+        }
+
         // Set the draw color to yellow and clear the window each frame
         sdl2_manager
             .canvas
