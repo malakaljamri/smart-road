@@ -1,5 +1,3 @@
-use sdl2::pixels::Color;
-
 pub struct Statistics {
     pub max_vehicles_passed: usize,
     pub max_velocity: f32,
@@ -23,11 +21,10 @@ impl Statistics {
 
     pub fn render_stats(
         &self,
-        canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
+        sdl2_manager: &mut crate::render::sdl2_manager::Sdl2Manager,
         font: &sdl2::ttf::Font,
     ) {
-        canvas.set_draw_color(Color::RGB(0, 0, 0));
-        canvas.clear();
+        sdl2_manager.clear().unwrap();
 
         let stats_lines = vec![
             format!("Max Vehicles Passed: {}", self.max_vehicles_passed),
@@ -39,7 +36,7 @@ impl Statistics {
             format!("Press ESC to Exit"),
         ];
 
-        let texture_creator = canvas.texture_creator();
+        let texture_creator = sdl2_manager.canvas.texture_creator();
         let line_height = 30;
 
         for (i, line) in stats_lines.iter().enumerate() {
@@ -53,7 +50,10 @@ impl Statistics {
             let y_pos = 10 + (i as i32 * line_height);
             let target = sdl2::rect::Rect::new(10, y_pos, surface.width(), surface.height());
 
-            canvas.copy(&texture, None, Some(target)).unwrap();
+            sdl2_manager
+                .canvas
+                .copy(&texture, None, Some(target))
+                .unwrap();
         }
     }
 }

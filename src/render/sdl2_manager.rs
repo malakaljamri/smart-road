@@ -40,17 +40,16 @@ impl Sdl2Manager {
         })
     }
 
-    //? Might be useful later
-    // /**
-    //  * Clears the canvas with a black color.
-    //  * This should be called at the beginning of each frame before drawing.
-    //  */
-    // pub fn clear(&mut self) -> Result<(), String> {
-    //     self.canvas
-    //         .set_draw_color(sdl2::pixels::Color::RGB(0, 0, 0));
-    //     self.canvas.clear();
-    //     Ok(())
-    // }
+    /**
+     * Clears the canvas with a black color.
+     * This should be called at the beginning of each frame before drawing.
+     */
+    pub fn clear(&mut self) -> Result<(), String> {
+        self.canvas
+            .set_draw_color(sdl2::pixels::Color::RGB(0, 0, 0));
+        self.canvas.clear();
+        Ok(())
+    }
 
     // /**
     //  * Presents the current canvas content to the window.

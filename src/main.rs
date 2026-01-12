@@ -82,7 +82,7 @@ fn main() {
 
         if showing_stats {
             // Render stats and wait for close
-            statistics.render_stats(&mut sdl2_manager.canvas, &font);
+            statistics.render_stats(&mut sdl2_manager, &font);
             sdl2_manager.canvas.present();
             // Prevent high CPU usage while showing stats
             std::thread::sleep(std::time::Duration::from_millis(16));
