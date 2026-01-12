@@ -96,7 +96,6 @@ fn main() {
                 1 => (Direction::West, 402.5),
                 _ => (Direction::North, 437.5),
             };
-            // println!("Spawn vehicle from south to {:?}", random_dir);
 
             let lane = Lane::set(types::Direction::South, random_dir);
             let vehicle = Vehicle::new(vehicles.len(), x, 800.0, lane);
@@ -111,7 +110,6 @@ fn main() {
                 1 => (Direction::West, 295.0),
                 _ => (Direction::South, 330.0),
             };
-            // println!("Spawn vehicle from north to {:?}", random_dir);
 
             let lane = Lane::set(types::Direction::North, random_dir);
             let vehicle = Vehicle::new(vehicles.len(), x, 0.0, lane);
@@ -126,7 +124,6 @@ fn main() {
                 1 => (Direction::South, 365.0),
                 _ => (Direction::West, 330.0),
             };
-            // println!("Spawn vehicle from east to {:?}", random_dir);
 
             let lane = Lane::set(types::Direction::East, random_dir);
             let vehicle = Vehicle::new(vehicles.len(), 800.0, y, lane);
@@ -141,7 +138,6 @@ fn main() {
                 1 => (Direction::South, 472.5),
                 _ => (Direction::East, 437.5),
             };
-            // println!("Spawn vehicle from west to {:?}", random_dir);
 
             let lane = Lane::set(types::Direction::West, random_dir);
             let vehicle = Vehicle::new(vehicles.len(), 0.0, y, lane);
