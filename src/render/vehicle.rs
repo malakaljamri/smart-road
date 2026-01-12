@@ -46,9 +46,35 @@ impl Vehicle {
 
     pub fn update(&mut self) {
         // Test movement logic: move the vehicle in its direction
+        if self.y > 295.0 && self.y < 505.0 && self.x > 295.0 && self.x < 505.0 {
+            self.state = VehicleState::Crossing;
+        }
+
         //TODO: Implement proper logic
         match self.direction {
-            Direction::North => self.y -= self.speed,
+            Direction::North => {
+                self.y -= self.speed;
+
+                if self.y < 295.0 {
+                    self.state = VehicleState::Exiting;
+                }
+
+                if self.state == VehicleState::Crossing {
+                    match self.lane.to {
+                        Direction::East => {
+                            if self.y <= 472.5 {
+                                self.direction = Direction::East;
+                            }
+                        }
+                        Direction::West => {
+                            if self.y <= 367.5 {
+                                self.direction = Direction::West;
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
             Direction::South => self.y += self.speed,
             Direction::East => self.x += self.speed,
             Direction::West => self.x -= self.speed,
