@@ -22,7 +22,7 @@ impl Statistics {
     }
 
     pub fn render_stats(&self, sdl2_manager: &mut Sdl2Manager, font: &sdl2::ttf::Font) {
-        sdl2_manager.clear().unwrap();
+        sdl2_manager.clear();
 
         let stats_lines = vec![
             format!("Max Vehicles Passed: {}", self.max_vehicles_passed),
