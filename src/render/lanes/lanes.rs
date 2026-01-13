@@ -7,6 +7,49 @@ use sdl2::{
     video::WindowContext,
 };
 
+pub fn draw_intersection(
+    sdl2_manager: &mut Sdl2Manager,
+    font: &Font<'_, '_>,
+    texture_creator: &TextureCreator<WindowContext>,
+) {
+    // Set the draw color to yellow and clear the window each frame
+    sdl2_manager.canvas.set_draw_color(Color::RGB(255, 235, 59));
+    sdl2_manager.canvas.clear();
+
+    // corner rects
+    sdl2_manager.canvas.set_draw_color(Color::RGB(0, 0, 0));
+    let top_left = Rect::new(0, 0, 295, 295);
+    let top_right = Rect::new(505, 0, 295, 295);
+    let bottom_left = Rect::new(0, 505, 295, 295);
+    let bottom_right = Rect::new(505, 505, 295, 295);
+
+    // draw corner rects
+    sdl2_manager.canvas.fill_rect(top_left).unwrap();
+    sdl2_manager.canvas.fill_rect(top_right).unwrap();
+    sdl2_manager.canvas.fill_rect(bottom_left).unwrap();
+    sdl2_manager.canvas.fill_rect(bottom_right).unwrap();
+
+    //* Font and text */
+    let text_surface = font.render("Smart Road").blended(Color::BLACK).unwrap();
+    // let texture_creator = sdl2_manager.canvas.texture_creator();
+    let text_texture = texture_creator
+        .create_texture_from_surface(&text_surface)
+        .unwrap();
+
+    let target = Rect::new(
+        800 / 2 - (text_surface.width() as i32) / 2,
+        400 - (text_surface.height() as i32) / 2,
+        text_surface.width(),
+        text_surface.height(),
+    );
+    sdl2_manager
+        .canvas
+        .copy(&text_texture, None, Some(target))
+        .unwrap();
+
+    draw_lanes(sdl2_manager, font, texture_creator);
+}
+
 pub fn draw_lanes(
     sdl2_manager: &mut Sdl2Manager,
     font: &Font<'_, '_>,
