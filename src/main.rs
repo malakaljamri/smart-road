@@ -5,7 +5,7 @@ mod types;
 
 use crate::{
     input::InputHandler,
-    render::{Statistics, TextureCache, draw_intersection},
+    render::{Statistics, TextureCache, draw_roads},
 };
 use render::{Sdl2Manager, Vehicle};
 use sdl2::{image::InitFlag, rect::Rect, render::TextureCreator};
@@ -89,7 +89,7 @@ fn main() {
             continue;
         }
 
-        draw_intersection(&mut sdl2_manager, &font, &texture_creator);
+        draw_roads(&mut sdl2_manager, &font, &texture_creator);
 
         input.spawn_cars(&mut vehicles);
 

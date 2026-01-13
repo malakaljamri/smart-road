@@ -7,7 +7,7 @@ use sdl2::{
     video::WindowContext,
 };
 
-pub fn draw_intersection(
+pub fn draw_roads(
     sdl2_manager: &mut Sdl2Manager,
     font: &Font<'_, '_>,
     texture_creator: &TextureCreator<WindowContext>,
