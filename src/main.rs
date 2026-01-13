@@ -11,7 +11,7 @@ use crate::{
 use intersection::Lane;
 use rand::Rng;
 use render::{Sdl2Manager, Vehicle};
-use sdl2::{image::InitFlag, pixels::Color, rect::Rect};
+use sdl2::{image::InitFlag, pixels::Color, rect::Rect, render::TextureCreator};
 
 /*
 lane width = 35px
@@ -44,7 +44,7 @@ fn main() {
         .unwrap_or_else(|_| panic!("Failed to get SDL2 event pump"));
 
     // use texture creator to draw vehicles
-    let texture_creator: sdl2::render::TextureCreator<sdl2::video::WindowContext> =
+    let texture_creator: TextureCreator<sdl2::video::WindowContext> =
         sdl2_manager.canvas.texture_creator();
     let texture_cache = TextureCache::new(&texture_creator);
 
@@ -101,7 +101,7 @@ fn main() {
                 _ => (Direction::North, 437.5),
             };
 
-            let lane = Lane::set(types::Direction::South, random_dir);
+            let lane = Lane::set(Direction::South, random_dir);
             let vehicle = Vehicle::new(vehicles.len(), x, 800.0, lane);
             println!("vehicle: {:?}", vehicle);
             vehicles.push(vehicle);
@@ -115,7 +115,7 @@ fn main() {
                 _ => (Direction::South, 330.0),
             };
 
-            let lane = Lane::set(types::Direction::North, random_dir);
+            let lane = Lane::set(Direction::North, random_dir);
             let vehicle = Vehicle::new(vehicles.len(), x, 0.0, lane);
             println!("vehicle: {:?}", vehicle);
             vehicles.push(vehicle);
@@ -129,7 +129,7 @@ fn main() {
                 _ => (Direction::West, 330.0),
             };
 
-            let lane = Lane::set(types::Direction::East, random_dir);
+            let lane = Lane::set(Direction::East, random_dir);
             let vehicle = Vehicle::new(vehicles.len(), 800.0, y, lane);
             println!("vehicle: {:?}", vehicle);
             vehicles.push(vehicle);
@@ -143,7 +143,7 @@ fn main() {
                 _ => (Direction::East, 437.5),
             };
 
-            let lane = Lane::set(types::Direction::West, random_dir);
+            let lane = Lane::set(Direction::West, random_dir);
             let vehicle = Vehicle::new(vehicles.len(), 0.0, y, lane);
             println!("vehicle: {:?}", vehicle);
             vehicles.push(vehicle);
@@ -152,7 +152,7 @@ fn main() {
         // Set the draw color to yellow and clear the window each frame
         sdl2_manager
             .canvas
-            .set_draw_color(sdl2::pixels::Color::RGB(255, 235, 59));
+            .set_draw_color(Color::RGB(255, 235, 59));
         sdl2_manager.canvas.clear();
 
         // corner rects
