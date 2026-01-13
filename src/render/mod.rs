@@ -10,5 +10,5 @@ pub use textures::*;
 pub mod statistics;
 pub use statistics::*;
 
-pub mod lanes;
-pub use lanes::*;
+pub mod intersection;
+pub use intersection::*;
