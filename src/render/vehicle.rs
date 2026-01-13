@@ -80,22 +80,4 @@ impl Vehicle {
             Direction::West => self.x -= self.speed,
         }
     }
-
-    pub fn get_texture_path(&self) -> String {
-        let direction_str = match self.direction {
-            Direction::North => "north",
-            Direction::South => "south",
-            Direction::East => "east",
-            Direction::West => "west",
-        };
-
-        let color_str = match self.color {
-            VehicleColor::Blue => "blue",
-            VehicleColor::Green => "green",
-            VehicleColor::Pink => "pink",
-            VehicleColor::Yellow => "yellow",
-        };
-
-        format!("assets/vehicles/{}/car_{}.png", direction_str, color_str)
-    }
 }

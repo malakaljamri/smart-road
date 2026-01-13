@@ -102,19 +102,4 @@ impl InputHandler {
             vehicles.push(vehicle);
         }
     }
-
-    //? Might be useful later
-    // pub fn get_direction(&self) -> Option<Direction> {
-    //     if self.spawn_north {
-    //         Some(Direction::North)
-    //     } else if self.spawn_south {
-    //         Some(Direction::South)
-    //     } else if self.spawn_east {
-    //         Some(Direction::East)
-    //     } else if self.spawn_west {
-    //         Some(Direction::West)
-    //     } else {
-    //         None
-    //     }
-    // }
 }
