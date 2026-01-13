@@ -11,15 +11,13 @@ use crate::{
 use intersection::Lane;
 use rand::Rng;
 use render::{Sdl2Manager, Vehicle};
-use sdl2::{
-    image::InitFlag,
-    pixels::Color,
-    rect::{Point, Rect},
-};
+use sdl2::{image::InitFlag, pixels::Color, rect::Rect};
 
-// lane width = 35px
-// lane height = 295px
-// car width = 30px
+/*
+lane width = 35px
+lane height = 295px
+car width = 30px
+*/
 
 fn main() {
     sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "1");

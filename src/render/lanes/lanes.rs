@@ -4,12 +4,13 @@ use sdl2::{
     rect::{Point, Rect},
     render::TextureCreator,
     ttf::Font,
+    video::WindowContext,
 };
 
 pub fn draw_lanes(
     sdl2_manager: &mut Sdl2Manager,
     font: &Font<'_, '_>,
-    texture_creator: &TextureCreator<sdl2::video::WindowContext>,
+    texture_creator: &TextureCreator<WindowContext>,
 ) {
     // top
     sdl2_manager
