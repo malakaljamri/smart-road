@@ -46,7 +46,16 @@ impl Vehicle {
 
     pub fn update(&mut self) {
         // Test movement logic: move the vehicle in its direction
-        if self.y > 295.0 && self.y < 505.0 && self.x > 295.0 && self.x < 505.0 {
+        // if self.y > 295.0 && self.y < 505.0 && self.x > 295.0 && self.x < 505.0 {
+        //     self.state = VehicleState::Crossing;
+        // }
+
+        // Had to improve this by separating the condition for each direction
+        if (self.direction == Direction::South && self.y >= 295.0 && self.y <= 505.0)
+            || (self.direction == Direction::North && self.y <= 505.0 && self.y >= 295.0)
+            || (self.direction == Direction::East && self.x >= 295.0 && self.x <= 505.0)
+            || (self.direction == Direction::West && self.x <= 505.0 && self.x >= 295.0)
+        {
             self.state = VehicleState::Crossing;
         }
 
@@ -75,9 +84,75 @@ impl Vehicle {
                     }
                 }
             }
-            Direction::South => self.y += self.speed,
-            Direction::East => self.x += self.speed,
-            Direction::West => self.x -= self.speed,
+            Direction::South => {
+                self.y += self.speed;
+
+                if self.y > 505.0 {
+                    self.state = VehicleState::Exiting;
+                }
+
+                if self.state == VehicleState::Crossing {
+                    match self.lane.to {
+                        Direction::East => {
+                            if self.y >= 395.0 {
+                                self.direction = Direction::East
+                            }
+                        },
+                        Direction::West => {
+                            if self.y >= 300.0 {
+                                self.direction = Direction::West
+                            }
+                        },
+                        _ => {}
+                    }
+                }
+            },
+            Direction::West => {
+                self.x -= self.speed;
+
+                if self.x < 295.0 {
+                    self.state = VehicleState::Exiting;
+                }
+
+                if self.state == VehicleState::Crossing {
+                    match self.lane.to {
+                        Direction::North => {
+                            if self.x <= 472.5 {
+                                self.direction = Direction::North;
+                            }
+                        }
+                        Direction::South => {
+                            if self.x <= 367.5 {
+                                self.direction = Direction::South;
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            },
+            Direction::East => {
+                self.x += self.speed;
+
+                if self.x > 505.0 {
+                    self.state = VehicleState::Exiting;
+                }
+
+                if self.state == VehicleState::Crossing {
+                    match self.lane.to {
+                        Direction::North => {
+                            if self.x >= 395.0 {
+                                self.direction = Direction::North
+                            }
+                        },
+                        Direction::South => {
+                            if self.x >= 300.0 {
+                                self.direction = Direction::South
+                            }
+                        },
+                        _ => {}
+                    }
+                }
+            },
         }
     }
 }
