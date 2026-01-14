@@ -36,7 +36,7 @@ impl Vehicle {
             x,
             y,
             //TODO: Adjust speed based on project requirements
-            speed: 0.5,
+            speed: 1.0,
             color: random_color,
             direction: start_dir,
             lane,
@@ -50,12 +50,15 @@ impl Vehicle {
         //     self.state = VehicleState::Crossing;
         // }
 
+        let is_in_intersection_bounds = [
+            self.direction == Direction::South && self.y >= 295.0 && self.y <= 505.0,
+            self.direction == Direction::North && self.y <= 505.0 && self.y >= 295.0,
+            self.direction == Direction::East && self.x >= 295.0 && self.x <= 505.0,
+            self.direction == Direction::West && self.x <= 505.0 && self.x >= 295.0,
+        ];
+
         // Had to improve this by separating the condition for each direction
-        if (self.direction == Direction::South && self.y >= 295.0 && self.y <= 505.0)
-            || (self.direction == Direction::North && self.y <= 505.0 && self.y >= 295.0)
-            || (self.direction == Direction::East && self.x >= 295.0 && self.x <= 505.0)
-            || (self.direction == Direction::West && self.x <= 505.0 && self.x >= 295.0)
-        {
+        if is_in_intersection_bounds.iter().any(|&x| x) {
             self.state = VehicleState::Crossing;
         }
 
@@ -97,16 +100,16 @@ impl Vehicle {
                             if self.y >= 395.0 {
                                 self.direction = Direction::East
                             }
-                        },
+                        }
                         Direction::West => {
                             if self.y >= 300.0 {
                                 self.direction = Direction::West
                             }
-                        },
+                        }
                         _ => {}
                     }
                 }
-            },
+            }
             Direction::West => {
                 self.x -= self.speed;
 
@@ -129,7 +132,7 @@ impl Vehicle {
                         _ => {}
                     }
                 }
-            },
+            }
             Direction::East => {
                 self.x += self.speed;
 
@@ -143,16 +146,16 @@ impl Vehicle {
                             if self.x >= 395.0 {
                                 self.direction = Direction::North
                             }
-                        },
+                        }
                         Direction::South => {
                             if self.x >= 300.0 {
                                 self.direction = Direction::South
                             }
-                        },
+                        }
                         _ => {}
                     }
                 }
-            },
+            }
         }
     }
 }
