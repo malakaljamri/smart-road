@@ -36,7 +36,7 @@ impl Vehicle {
             x,
             y,
             //TODO: Adjust speed based on project requirements
-            speed: 1.0,
+            speed: 0.5,
             color: random_color,
             direction: start_dir,
             lane,
