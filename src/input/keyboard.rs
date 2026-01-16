@@ -1,4 +1,4 @@
-use crate::{intersection::Lane, render::Vehicle, types::Direction};
+use crate::{render::Vehicle, traffic::Lane, types::Direction};
 use rand::Rng;
 use sdl2::keyboard::Keycode;
 
@@ -115,3 +115,5 @@ impl InputHandler {
         }
     }
 }
+
+// move spawn code to vehicle

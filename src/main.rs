@@ -1,6 +1,6 @@
 mod input;
-mod intersection;
 mod render;
+mod traffic;
 mod types;
 
 use crate::{
@@ -8,7 +8,8 @@ use crate::{
     render::{Statistics, TextureCache, draw_roads},
 };
 use render::{Sdl2Manager, Vehicle};
-use sdl2::{image::InitFlag, rect::Rect, render::TextureCreator};
+use sdl2::{image::InitFlag, render::TextureCreator};
+use traffic::traffic_manager;
 
 /*
 lane width = 35px
@@ -43,7 +44,7 @@ fn main() {
     // use texture creator to draw vehicles
     let texture_creator: TextureCreator<sdl2::video::WindowContext> =
         sdl2_manager.canvas.texture_creator();
-    let texture_cache = TextureCache::new(&texture_creator);
+    let texture_cache: TextureCache<'_> = TextureCache::new(&texture_creator);
 
     let mut showing_stats = false;
 
@@ -91,25 +92,9 @@ fn main() {
 
         draw_roads(&mut sdl2_manager, &font, &texture_creator);
 
-        input.spawn_cars(&mut vehicles);
+        traffic_manager(&mut input, &mut vehicles);
 
-        // update vehicles
-        for vehicle in &mut vehicles {
-            vehicle.update();
-        }
-
-        for vehicle in &vehicles {
-            let vehicle_texture = texture_cache.get(vehicle.color, vehicle.direction);
-
-            sdl2_manager
-                .canvas
-                .copy(
-                    &vehicle_texture,
-                    None,
-                    Some(Rect::new(vehicle.x as i32, vehicle.y as i32, 30, 30)),
-                )
-                .unwrap();
-        }
+        Vehicle::render(&vehicles, &texture_cache, &mut sdl2_manager);
 
         sdl2_manager.canvas.present();
     }

@@ -1,5 +1,10 @@
-use crate::intersection::Lane;
+use crate::render::Sdl2Manager;
+use crate::render::TextureCache;
+use crate::traffic::Lane;
+use crate::traffic::collision::Collision;
 use crate::types::{Direction, VehicleColor, VehicleState};
+use sdl2::rect::Rect;
+
 use rand::Rng;
 
 #[derive(Debug)]
@@ -12,6 +17,7 @@ pub struct Vehicle {
     pub state: VehicleState,
     pub color: VehicleColor,
     pub speed: f32,
+    pub collision: Collision,
 }
 
 impl Vehicle {
@@ -41,6 +47,7 @@ impl Vehicle {
             direction: start_dir,
             lane,
             state: VehicleState::Approaching,
+            collision: Collision::new(0, 0.0, 0.0),
         }
     }
 
@@ -156,6 +163,25 @@ impl Vehicle {
                     }
                 }
             }
+        }
+    }
+
+    pub fn render(
+        vehicles: &Vec<Self>,
+        texture_cache: &TextureCache<'_>,
+        sdl2_manager: &mut Sdl2Manager,
+    ) {
+        for vehicle in vehicles {
+            let vehicle_texture = texture_cache.get(vehicle.color, vehicle.direction);
+
+            sdl2_manager
+                .canvas
+                .copy(
+                    &vehicle_texture,
+                    None,
+                    Some(Rect::new(vehicle.x as i32, vehicle.y as i32, 30, 30)),
+                )
+                .unwrap();
         }
     }
 }
