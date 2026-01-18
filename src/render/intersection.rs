@@ -161,6 +161,7 @@ pub fn draw_lanes(
     let s_texture = texture_creator
         .create_texture_from_surface(&s_surface)
         .unwrap();
+         
     let s_target = Rect::new(448, 505, s_surface.width(), s_surface.height());
     sdl2_manager
         .canvas

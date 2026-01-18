@@ -7,7 +7,7 @@ use sdl2::rect::Rect;
 
 use rand::Rng;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Vehicle {
     pub id: usize,
     pub x: f32,
@@ -37,25 +37,55 @@ impl Vehicle {
             Direction::West => Direction::East,
         };
 
+        let mut rng = rand::thread_rng();
+        let random_speed = rng.gen_range(0.8..2.0);
+        
         Vehicle {
             id,
             x,
             y,
-            //TODO: Adjust speed based on project requirements
-            speed: 1.0,
+            speed: random_speed,
             color: random_color,
             direction: start_dir,
             lane,
             state: VehicleState::Approaching,
-            collision: Collision::new(0, 0.0, 0.0),
+            collision: Collision::new(id as i32, x, y),
         }
     }
 
-    pub fn update(&mut self) {
-        // Test movement logic: move the vehicle in its direction
-        // if self.y > 295.0 && self.y < 505.0 && self.x > 295.0 && self.x < 505.0 {
-        //     self.state = VehicleState::Crossing;
-        // }
+    pub fn update(&mut self, vehicles: &[Vehicle]) {
+        // Update collision position
+        self.collision.x = self.x;
+        self.collision.y = self.y;
+
+        // Check for vehicles ahead and adjust speed
+        if let Some(vehicle_ahead) = Collision::check_vehicle_ahead(self, vehicles) {
+            let distance = ((self.x - vehicle_ahead.x).powi(2) + (self.y - vehicle_ahead.y).powi(2)).sqrt();
+            
+            if distance < self.collision.safe_distance {
+                self.state = VehicleState::Waiting;
+                return;
+            } else if distance < self.collision.safe_distance + 30.0 {
+                // Slow down when getting close
+                self.speed = (self.speed * 0.5).max(0.3);
+            } else {
+                // Resume normal speed
+                self.speed = (self.speed * 1.1).min(2.0);
+            }
+        } else {
+            // Resume normal speed if no obstacles
+            self.speed = (self.speed * 1.05).min(2.0);
+        }
+
+        // If waiting, don't move
+        if self.state == VehicleState::Waiting {
+            // Check if path is clear now
+            if Collision::check_vehicle_ahead(self, vehicles).is_none() {
+                self.state = VehicleState::Approaching;
+            } else {
+                return;
+            }
+        }
 
         let is_in_intersection_bounds = [
             self.direction == Direction::South && self.y >= 295.0 && self.y <= 505.0,

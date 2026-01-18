@@ -4,8 +4,9 @@ pub fn traffic_manager(input: &mut InputHandler, vehicles: &mut Vec<vehicle::Veh
     input.spawn_cars(vehicles);
 
     // update vehicles
-    for vehicle in vehicles {
-        // todo: check and handle for possible collisions for each vehicle
-        vehicle.update();
+    for i in 0..vehicles.len() {
+        // Create a temporary reference to avoid borrowing issues
+        let vehicles_clone = vehicles.clone();
+        vehicles[i].update(&vehicles_clone);
     }
 }

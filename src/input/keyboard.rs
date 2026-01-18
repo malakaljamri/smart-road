@@ -58,6 +58,14 @@ impl InputHandler {
             }
         }
 
+        // Helper function to check if spawn position is safe
+        let is_spawn_safe = |x: f32, y: f32, vehicles: &[Vehicle]| -> bool {
+            !vehicles.iter().any(|v| {
+                let distance = ((v.x - x).powi(2) + (v.y - y).powi(2)).sqrt();
+                distance < 50.0 // Safe spawn distance
+            })
+        };
+
         // south to north
         if self.spawn_south {
             let (random_dir, x) = match rng.gen_range(0..3) {
@@ -66,10 +74,12 @@ impl InputHandler {
                 _ => (Direction::North, 437.5),
             };
 
-            let lane = Lane::set(Direction::South, random_dir);
-            let vehicle = Vehicle::new(vehicles.len(), x, 800.0, lane);
-            println!("vehicle: {:?}", vehicle);
-            vehicles.push(vehicle);
+            if is_spawn_safe(x, 800.0, vehicles) {
+                let lane = Lane::set(Direction::South, random_dir);
+                let vehicle = Vehicle::new(vehicles.len(), x, 800.0, lane);
+                println!("vehicle: {:?}", vehicle);
+                vehicles.push(vehicle);
+            }
         }
 
         // north to south
@@ -80,10 +90,12 @@ impl InputHandler {
                 _ => (Direction::South, 330.0),
             };
 
-            let lane = Lane::set(Direction::North, random_dir);
-            let vehicle = Vehicle::new(vehicles.len(), x, 0.0, lane);
-            println!("vehicle: {:?}", vehicle);
-            vehicles.push(vehicle);
+            if is_spawn_safe(x, 0.0, vehicles) {
+                let lane = Lane::set(Direction::North, random_dir);
+                let vehicle = Vehicle::new(vehicles.len(), x, 0.0, lane);
+                println!("vehicle: {:?}", vehicle);
+                vehicles.push(vehicle);
+            }
         }
 
         // east to west
@@ -94,10 +106,12 @@ impl InputHandler {
                 _ => (Direction::West, 330.0),
             };
 
-            let lane = Lane::set(Direction::East, random_dir);
-            let vehicle = Vehicle::new(vehicles.len(), 800.0, y, lane);
-            println!("vehicle: {:?}", vehicle);
-            vehicles.push(vehicle);
+            if is_spawn_safe(800.0, y, vehicles) {
+                let lane = Lane::set(Direction::East, random_dir);
+                let vehicle = Vehicle::new(vehicles.len(), 800.0, y, lane);
+                println!("vehicle: {:?}", vehicle);
+                vehicles.push(vehicle);
+            }
         }
 
         // west to east
@@ -108,10 +122,12 @@ impl InputHandler {
                 _ => (Direction::East, 437.5),
             };
 
-            let lane = Lane::set(Direction::West, random_dir);
-            let vehicle = Vehicle::new(vehicles.len(), 0.0, y, lane);
-            println!("vehicle: {:?}", vehicle);
-            vehicles.push(vehicle);
+            if is_spawn_safe(0.0, y, vehicles) {
+                let lane = Lane::set(Direction::West, random_dir);
+                let vehicle = Vehicle::new(vehicles.len(), 0.0, y, lane);
+                println!("vehicle: {:?}", vehicle);
+                vehicles.push(vehicle);
+            }
         }
     }
 }
