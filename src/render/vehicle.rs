@@ -38,7 +38,7 @@ impl Vehicle {
         };
 
         let mut rng = rand::thread_rng();
-        let random_speed = rng.gen_range(0.8..2.0);
+        let random_speed = rng.gen_range(0.8..1.2);
         
         Vehicle {
             id,
@@ -58,23 +58,30 @@ impl Vehicle {
         self.collision.x = self.x;
         self.collision.y = self.y;
 
-        // Check for vehicles ahead and adjust speed
+        // Calculate target speed based on conditions
+        let mut target_speed = 1.5; // Default cruising speed
+
+        // Check for vehicles ahead and adjust target speed
         if let Some(vehicle_ahead) = Collision::check_vehicle_ahead(self, vehicles) {
             let distance = ((self.x - vehicle_ahead.x).powi(2) + (self.y - vehicle_ahead.y).powi(2)).sqrt();
-            
+
             if distance < self.collision.safe_distance {
                 self.state = VehicleState::Waiting;
-                return;
+                target_speed = 0.0;
             } else if distance < self.collision.safe_distance + 30.0 {
-                // Slow down when getting close
-                self.speed = (self.speed * 0.5).max(0.3);
-            } else {
-                // Resume normal speed
-                self.speed = (self.speed * 1.1).min(2.0);
+                // Slow down proportionally based on distance
+                let ratio = (distance - self.collision.safe_distance) / 30.0;
+                target_speed = 0.8 * ratio + 0.4; // Range: 0.4 to 1.2
             }
-        } else {
-            // Resume normal speed if no obstacles
-            self.speed = (self.speed * 1.05).min(2.0);
+        }
+
+        // Smoothly interpolate towards target speed
+        if target_speed > self.speed {
+            // Accelerate
+            self.speed = (self.speed + 0.15).min(target_speed).min(2.0);
+        } else if target_speed < self.speed {
+            // Decelerate
+            self.speed = (self.speed - 0.2).max(target_speed).max(0.3);
         }
 
         // If waiting, don't move
