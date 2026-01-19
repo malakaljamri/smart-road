@@ -12,22 +12,34 @@ pub fn draw_roads(
     font: &Font<'_, '_>,
     texture_creator: &TextureCreator<WindowContext>,
 ) {
-    // Set the draw color to yellow and clear the window each frame
-    sdl2_manager.canvas.set_draw_color(Color::RGB(255, 235, 59));
+    // Set the draw color to #b0c4de for the road
+    sdl2_manager.canvas.set_draw_color(Color::RGB(176, 196, 222));
     sdl2_manager.canvas.clear();
 
-    // corner rects
-    sdl2_manager.canvas.set_draw_color(Color::RGB(0, 0, 0));
+    // Load grass image for corner areas
+    let grass_surface = <sdl2::surface::Surface<'_> as sdl2::image::LoadSurface>::from_file("grass.jpg").ok();
+    let grass_texture = grass_surface
+        .as_ref()
+        .and_then(|surface| texture_creator.create_texture_from_surface(surface).ok());
+
     let top_left = Rect::new(0, 0, 295, 295);
     let top_right = Rect::new(505, 0, 295, 295);
     let bottom_left = Rect::new(0, 505, 295, 295);
     let bottom_right = Rect::new(505, 505, 295, 295);
 
     // draw corner rects
-    sdl2_manager.canvas.fill_rect(top_left).unwrap();
-    sdl2_manager.canvas.fill_rect(top_right).unwrap();
-    sdl2_manager.canvas.fill_rect(bottom_left).unwrap();
-    sdl2_manager.canvas.fill_rect(bottom_right).unwrap();
+    if let Some(grass_texture) = grass_texture {
+        sdl2_manager.canvas.copy(&grass_texture, None, Some(top_left)).unwrap();
+        sdl2_manager.canvas.copy(&grass_texture, None, Some(top_right)).unwrap();
+        sdl2_manager.canvas.copy(&grass_texture, None, Some(bottom_left)).unwrap();
+        sdl2_manager.canvas.copy(&grass_texture, None, Some(bottom_right)).unwrap();
+    } else {
+        sdl2_manager.canvas.set_draw_color(Color::RGB(34, 139, 34));
+        sdl2_manager.canvas.fill_rect(top_left).unwrap();
+        sdl2_manager.canvas.fill_rect(top_right).unwrap();
+        sdl2_manager.canvas.fill_rect(bottom_left).unwrap();
+        sdl2_manager.canvas.fill_rect(bottom_right).unwrap();
+    }
 
     //* Font and text */
     let text_surface = font.render("Smart Road").blended(Color::BLACK).unwrap();
@@ -55,11 +67,21 @@ pub fn draw_lanes(
     font: &Font<'_, '_>,
     texture_creator: &TextureCreator<WindowContext>,
 ) {
-    // top
-    sdl2_manager
-        .canvas
-        .draw_line(Point::new(330, 0), Point::new(330, 295))
-        .unwrap();
+    // Set separator line color to black
+    sdl2_manager.canvas.set_draw_color(Color::RGB(0, 0, 0));
+
+    // Draw thick separator lines between lane sections (l, s, r)
+    let separator_width = 2;
+    let top_separators = [
+        Rect::new(330, 0, separator_width, 295), // r | s
+        Rect::new(365, 0, separator_width, 295), // s | l
+        Rect::new(400, 0, separator_width, 295), // l | l
+        Rect::new(435, 0, separator_width, 295), // l | s
+        Rect::new(470, 0, separator_width, 295), // s | r
+    ];
+    for sep in &top_separators {
+        sdl2_manager.canvas.fill_rect(*sep).unwrap();
+    }
 
     //* write "r" on the road to indicate stop line
     let r_surface = font.render("r").blended(Color::BLACK).unwrap();
@@ -111,7 +133,6 @@ pub fn draw_lanes(
         .canvas
         .copy(&l_texture, None, Some(l_target))
         .unwrap();
-
     //* end of "l" drawing
 
     sdl2_manager
@@ -128,22 +149,16 @@ pub fn draw_lanes(
         .unwrap();
 
     // bottom
-    sdl2_manager
-        .canvas
-        .draw_line(Point::new(330, 505), Point::new(330, 800))
-        .unwrap();
-    sdl2_manager
-        .canvas
-        .draw_line(Point::new(365, 505), Point::new(365, 800))
-        .unwrap();
-    sdl2_manager
-        .canvas
-        .draw_line(Point::new(400, 505), Point::new(400, 800))
-        .unwrap();
-    sdl2_manager
-        .canvas
-        .draw_line(Point::new(435, 505), Point::new(435, 800))
-        .unwrap();
+    let bottom_separators = [
+        Rect::new(330, 505, separator_width, 295),
+        Rect::new(365, 505, separator_width, 295),
+        Rect::new(400, 505, separator_width, 295),
+        Rect::new(435, 505, separator_width, 295),
+        Rect::new(470, 505, separator_width, 295),
+    ];
+    for sep in &bottom_separators {
+        sdl2_manager.canvas.fill_rect(*sep).unwrap();
+    }
 
     //* write "r" on the road to indicate stop line
     let r_surface = font.render("r").blended(Color::BLACK).unwrap();
@@ -193,23 +208,17 @@ pub fn draw_lanes(
         .draw_line(Point::new(400, 505), Point::new(505, 505)) // stop
         .unwrap();
 
-    // left
-    sdl2_manager
-        .canvas
-        .draw_line(Point::new(0, 330), Point::new(295, 330))
-        .unwrap();
-    sdl2_manager
-        .canvas
-        .draw_line(Point::new(0, 365), Point::new(295, 365))
-        .unwrap();
-    sdl2_manager
-        .canvas
-        .draw_line(Point::new(0, 400), Point::new(295, 400))
-        .unwrap();
-    sdl2_manager
-        .canvas
-        .draw_line(Point::new(0, 435), Point::new(295, 435))
-        .unwrap();
+    // left - thick separator lines between lanes
+    let left_separators = [
+        Rect::new(0, 330, 295, separator_width),
+        Rect::new(0, 365, 295, separator_width),
+        Rect::new(0, 400, 295, separator_width),
+        Rect::new(0, 435, 295, separator_width),
+        Rect::new(0, 470, 295, separator_width),
+    ];
+    for sep in &left_separators {
+        sdl2_manager.canvas.fill_rect(*sep).unwrap();
+    }
 
     //* write "l" on the road to indicate stop line
     let l_surface = font.render("l").blended(Color::BLACK).unwrap();
@@ -259,11 +268,17 @@ pub fn draw_lanes(
         .draw_line(Point::new(295, 400), Point::new(295, 505)) // stop
         .unwrap();
 
-    // right
-    sdl2_manager
-        .canvas
-        .draw_line(Point::new(505, 330), Point::new(800, 330))
-        .unwrap();
+    // right - thick separator lines between lanes
+    let right_separators = [
+        Rect::new(505, 330, 295, separator_width),
+        Rect::new(505, 365, 295, separator_width),
+        Rect::new(505, 400, 295, separator_width),
+        Rect::new(505, 435, 295, separator_width),
+        Rect::new(505, 470, 295, separator_width),
+    ];
+    for sep in &right_separators {
+        sdl2_manager.canvas.fill_rect(*sep).unwrap();
+    }
 
     //* write "r" on the road to indicate stop line
     let r_surface = font.render("r").blended(Color::BLACK).unwrap();
