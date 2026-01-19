@@ -59,7 +59,7 @@ impl Vehicle {
         self.collision.y = self.y;
 
         // Calculate target speed based on conditions
-        let mut target_speed = 1.5; // Default cruising speed
+        let mut target_speed = 2.0; // Higher cruising speed
 
         // Check for vehicles ahead and adjust target speed
         if let Some(vehicle_ahead) = Collision::check_vehicle_ahead(self, vehicles) {
@@ -68,20 +68,20 @@ impl Vehicle {
             if distance < self.collision.safe_distance {
                 self.state = VehicleState::Waiting;
                 target_speed = 0.0;
-            } else if distance < self.collision.safe_distance + 30.0 {
+            } else if distance < self.collision.safe_distance + 50.0 {
                 // Slow down proportionally based on distance
-                let ratio = (distance - self.collision.safe_distance) / 30.0;
-                target_speed = 0.8 * ratio + 0.4; // Range: 0.4 to 1.2
+                let ratio = (distance - self.collision.safe_distance) / 50.0;
+                target_speed = 1.5 * ratio + 0.5;
             }
         }
 
         // Smoothly interpolate towards target speed
         if target_speed > self.speed {
-            // Accelerate
-            self.speed = (self.speed + 0.15).min(target_speed).min(2.0);
+            // Accelerate faster
+            self.speed = (self.speed + 0.2).min(target_speed).min(2.5);
         } else if target_speed < self.speed {
-            // Decelerate
-            self.speed = (self.speed - 0.2).max(target_speed).max(0.3);
+            // Decelerate faster
+            self.speed = (self.speed - 0.3).max(target_speed).max(0.0);
         }
 
         // If waiting, don't move
