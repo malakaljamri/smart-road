@@ -21,6 +21,7 @@ fn main() {
     sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "1");
 
     let mut vehicles: Vec<Vehicle> = Vec::new();
+    let mut completed_vehicles: Vec<Vehicle> = Vec::new();
 
     // Not fully used yet pending statistics implementation
     let mut statistics = Statistics::new();
@@ -92,7 +93,7 @@ fn main() {
 
         draw_roads(&mut sdl2_manager, &font, &texture_creator);
 
-        traffic_manager(&mut input, &mut vehicles);
+        traffic_manager(&mut input, &mut vehicles, &mut statistics, &mut completed_vehicles);
 
         Vehicle::render(&vehicles, &texture_cache, &mut sdl2_manager);
 

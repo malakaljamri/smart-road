@@ -18,6 +18,10 @@ pub struct Vehicle {
     pub color: VehicleColor,
     pub speed: f32,
     pub collision: Collision,
+    pub intersection_entry_time: Option<f32>,
+    pub max_speed_reached: f32,
+    pub min_speed_reached: f32,
+    pub had_close_call: bool,
 }
 
 impl Vehicle {
@@ -50,6 +54,10 @@ impl Vehicle {
             lane,
             state: VehicleState::Approaching,
             collision: Collision::new(id as i32, x, y),
+            intersection_entry_time: None,
+            max_speed_reached: random_speed,
+            min_speed_reached: random_speed,
+            had_close_call: false,
         }
     }
 
@@ -59,7 +67,7 @@ impl Vehicle {
         self.collision.y = self.y;
 
         // Calculate target speed based on conditions
-        let mut target_speed = 2.0; // Higher cruising speed
+        let mut target_speed = 1.5; // Default cruising speed
 
         // Check for vehicles ahead and adjust target speed
         if let Some(vehicle_ahead) = Collision::check_vehicle_ahead(self, vehicles) {
@@ -68,20 +76,20 @@ impl Vehicle {
             if distance < self.collision.safe_distance {
                 self.state = VehicleState::Waiting;
                 target_speed = 0.0;
-            } else if distance < self.collision.safe_distance + 50.0 {
+            } else if distance < self.collision.safe_distance + 30.0 {
                 // Slow down proportionally based on distance
-                let ratio = (distance - self.collision.safe_distance) / 50.0;
-                target_speed = 1.5 * ratio + 0.5;
+                let ratio = (distance - self.collision.safe_distance) / 30.0;
+                target_speed = 0.8 * ratio + 0.4; // Range: 0.4 to 1.2
             }
         }
 
         // Smoothly interpolate towards target speed
         if target_speed > self.speed {
-            // Accelerate faster
-            self.speed = (self.speed + 0.2).min(target_speed).min(2.5);
+            // Accelerate
+            self.speed = (self.speed + 0.15).min(target_speed).min(2.0);
         } else if target_speed < self.speed {
-            // Decelerate faster
-            self.speed = (self.speed - 0.3).max(target_speed).max(0.0);
+            // Decelerate
+            self.speed = (self.speed - 0.2).max(target_speed).max(0.3);
         }
 
         // If waiting, don't move
@@ -103,6 +111,10 @@ impl Vehicle {
 
         // Had to improve this by separating the condition for each direction
         if is_in_intersection_bounds.iter().any(|&x| x) {
+            if self.intersection_entry_time.is_none() {
+                // Vehicle just entered intersection - start timing
+                self.intersection_entry_time = Some(0.0);
+            }
             self.state = VehicleState::Crossing;
         }
 
@@ -200,6 +212,15 @@ impl Vehicle {
                     }
                 }
             }
+        }
+        
+        // Track speed statistics
+        self.max_speed_reached = self.max_speed_reached.max(self.speed);
+        self.min_speed_reached = self.min_speed_reached.min(self.speed);
+        
+        // Increment intersection time if vehicle is in intersection
+        if let Some(ref mut entry_time) = self.intersection_entry_time {
+            *entry_time += 1.0; // Increment by 1 frame
         }
     }
 
