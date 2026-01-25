@@ -49,6 +49,32 @@ impl Collision {
             Direction::West => other.x < vehicle.x && (other.y - vehicle.y).abs() < 20.0,
         }
     }
+
+    pub fn is_vehicle_in_intersection(vehicle: &Vehicle) -> bool {
+        // Check if vehicle is within intersection bounds (295-505 on both axes)
+        vehicle.x >= 295.0 && vehicle.x <= 505.0 && vehicle.y >= 295.0 && vehicle.y <= 505.0
+    }
+
+    pub fn has_vehicle_in_intersection(vehicles: &[Vehicle], exclude_id: usize) -> bool {
+        vehicles.iter().any(|v| v.id != exclude_id && Self::is_vehicle_in_intersection(v))
+    }
+
+    pub fn should_wait_for_intersection(vehicle: &Vehicle, vehicles: &[Vehicle]) -> bool {
+        // Right-turning vehicles can proceed without waiting (real-world behavior)
+        let is_right_turn = match vehicle.lane.from {
+            Direction::North => vehicle.lane.to == Direction::East,
+            Direction::South => vehicle.lane.to == Direction::West,
+            Direction::East => vehicle.lane.to == Direction::North,
+            Direction::West => vehicle.lane.to == Direction::South,
+        };
+
+        if is_right_turn {
+            return false; // Right turns don't wait for intersection
+        }
+
+        // Straight and left-turning vehicles must wait if intersection is occupied
+        Self::has_vehicle_in_intersection(vehicles, vehicle.id)
+    }
 }
 
 use crate::types::Direction;

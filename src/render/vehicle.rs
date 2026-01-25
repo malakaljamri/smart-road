@@ -85,6 +85,12 @@ impl Vehicle {
             target_speed = 1.5 * braking_ratio;
         }
 
+        // Check for intersection mutual exclusion (only if approaching and not close enough to enter)
+        if self.state == VehicleState::Approaching && distance_to_intersection > 30.0 && Collision::should_wait_for_intersection(self, vehicles) {
+            self.state = VehicleState::Waiting;
+            target_speed = 0.0;
+        }
+
         // Check for vehicles ahead and adjust target speed
         if let Some(vehicle_ahead) = Collision::check_vehicle_ahead(self, vehicles) {
             let distance = ((self.x - vehicle_ahead.x).powi(2) + (self.y - vehicle_ahead.y).powi(2)).sqrt();
@@ -110,8 +116,12 @@ impl Vehicle {
 
         // If waiting, don't move
         if self.state == VehicleState::Waiting {
-            // Check if path is clear now
-            if Collision::check_vehicle_ahead(self, vehicles).is_none() {
+            // Check if path is clear and either intersection is available or we're close enough to enter
+            let path_clear = Collision::check_vehicle_ahead(self, vehicles).is_none();
+            let intersection_available = !Collision::should_wait_for_intersection(self, vehicles);
+            let can_enter = distance_to_intersection <= 30.0; // Close enough to claim intersection
+            
+            if path_clear && (intersection_available || can_enter) {
                 self.state = VehicleState::Approaching;
             } else {
                 return;
