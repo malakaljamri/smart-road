@@ -58,11 +58,43 @@ impl InputHandler {
             }
         }
 
-        // Helper function to check if spawn position is safe
-        let is_spawn_safe = |x: f32, y: f32, vehicles: &[Vehicle]| -> bool {
-            !vehicles.iter().any(|v| {
-                let distance = ((v.x - x).powi(2) + (v.y - y).powi(2)).sqrt();
-                distance < 50.0 // Safe spawn distance
+        // Helper function to check if spawn position is safe for specific lane
+        let is_lane_spawn_safe = |spawn_x: f32, spawn_y: f32, lane: &Lane, vehicles: &[Vehicle]| -> bool {
+            let safe_distance = 40.0; // Use same safe_distance as collision system
+            
+            vehicles.iter().all(|v| {
+                // Skip vehicles not in the same lane
+                if v.lane.from != lane.from || v.lane.to != lane.to {
+                    return true;
+                }
+                
+                let distance = ((v.x - spawn_x).powi(2) + (v.y - spawn_y).powi(2)).sqrt();
+                
+                // Check if vehicle is too close to spawn position
+                if distance < safe_distance {
+                    return false;
+                }
+                
+                // For vehicles further away, check if they're in the spawn path
+                match lane.from {
+                    Direction::South => {
+                        // Vehicles spawning from south go north
+                        // Check if existing vehicle is north of spawn point and in same lane path
+                        !(v.y < spawn_y && (v.x - spawn_x).abs() < 20.0 && distance < safe_distance * 3.0)
+                    }
+                    Direction::North => {
+                        // Vehicles spawning from north go south
+                        !(v.y > spawn_y && (v.x - spawn_x).abs() < 20.0 && distance < safe_distance * 3.0)
+                    }
+                    Direction::East => {
+                        // Vehicles spawning from east go west
+                        !(v.x < spawn_x && (v.y - spawn_y).abs() < 20.0 && distance < safe_distance * 3.0)
+                    }
+                    Direction::West => {
+                        // Vehicles spawning from west go east
+                        !(v.x > spawn_x && (v.y - spawn_y).abs() < 20.0 && distance < safe_distance * 3.0)
+                    }
+                }
             })
         };
 
@@ -74,11 +106,13 @@ impl InputHandler {
                 _ => (Direction::North, 437.5),
             };
 
-            if is_spawn_safe(x, 800.0, vehicles) {
-                let lane = Lane::set(Direction::South, random_dir);
+            let lane = Lane::set(Direction::South, random_dir);
+            if is_lane_spawn_safe(x, 800.0, &lane, vehicles) {
                 let vehicle = Vehicle::new(simulation.get_next_vehicle_id(), x, 800.0, lane);
                 println!("vehicle: {:?}", vehicle);
                 vehicles.push(vehicle);
+            } else {
+                println!("Lane South->{:?} congested, delaying spawn", random_dir);
             }
         }
 
@@ -90,11 +124,13 @@ impl InputHandler {
                 _ => (Direction::South, 330.0),
             };
 
-            if is_spawn_safe(x, 0.0, vehicles) {
-                let lane = Lane::set(Direction::North, random_dir);
+            let lane = Lane::set(Direction::North, random_dir);
+            if is_lane_spawn_safe(x, 0.0, &lane, vehicles) {
                 let vehicle = Vehicle::new(simulation.get_next_vehicle_id(), x, 0.0, lane);
                 println!("vehicle: {:?}", vehicle);
                 vehicles.push(vehicle);
+            } else {
+                println!("Lane North->{:?} congested, delaying spawn", random_dir);
             }
         }
 
@@ -106,11 +142,13 @@ impl InputHandler {
                 _ => (Direction::West, 330.0),
             };
 
-            if is_spawn_safe(800.0, y, vehicles) {
-                let lane = Lane::set(Direction::East, random_dir);
+            let lane = Lane::set(Direction::East, random_dir);
+            if is_lane_spawn_safe(800.0, y, &lane, vehicles) {
                 let vehicle = Vehicle::new(simulation.get_next_vehicle_id(), 800.0, y, lane);
                 println!("vehicle: {:?}", vehicle);
                 vehicles.push(vehicle);
+            } else {
+                println!("Lane East->{:?} congested, delaying spawn", random_dir);
             }
         }
 
@@ -122,11 +160,13 @@ impl InputHandler {
                 _ => (Direction::East, 437.5),
             };
 
-            if is_spawn_safe(0.0, y, vehicles) {
-                let lane = Lane::set(Direction::West, random_dir);
+            let lane = Lane::set(Direction::West, random_dir);
+            if is_lane_spawn_safe(0.0, y, &lane, vehicles) {
                 let vehicle = Vehicle::new(simulation.get_next_vehicle_id(), 0.0, y, lane);
                 println!("vehicle: {:?}", vehicle);
                 vehicles.push(vehicle);
+            } else {
+                println!("Lane West->{:?} congested, delaying spawn", random_dir);
             }
         }
     }
