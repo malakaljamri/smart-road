@@ -61,6 +61,15 @@ impl Vehicle {
         }
     }
 
+    pub fn distance_to_intersection(&self) -> f32 {
+        // Intersection center is at (400, 400)
+        let intersection_center_x = 400.0;
+        let intersection_center_y = 400.0;
+        
+        // Calculate Euclidean distance to intersection center
+        ((self.x - intersection_center_x).powi(2) + (self.y - intersection_center_y).powi(2)).sqrt()
+    }
+
     pub fn update(&mut self, vehicles: &[Vehicle]) {
         // Update collision position
         self.collision.x = self.x;
@@ -68,6 +77,13 @@ impl Vehicle {
 
         // Calculate target speed based on conditions
         let mut target_speed = 1.5; // Default cruising speed
+        let distance_to_intersection = self.distance_to_intersection();
+
+        // Slow down when approaching intersection
+        if distance_to_intersection < 150.0 && self.state == VehicleState::Approaching {
+            let braking_ratio = (distance_to_intersection / 150.0).max(0.3);
+            target_speed = 1.5 * braking_ratio;
+        }
 
         // Check for vehicles ahead and adjust target speed
         if let Some(vehicle_ahead) = Collision::check_vehicle_ahead(self, vehicles) {
@@ -116,6 +132,10 @@ impl Vehicle {
                 self.intersection_entry_time = Some(0.0);
             }
             self.state = VehicleState::Crossing;
+        } else if self.state == VehicleState::Approaching && distance_to_intersection < 50.0 {
+            // Transition to Crossing state when very close to intersection
+            self.state = VehicleState::Crossing;
+            self.intersection_entry_time = Some(0.0);
         }
 
         //TODO: Implement proper logic
