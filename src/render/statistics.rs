@@ -15,9 +15,9 @@ impl Statistics {
         Statistics {
             max_vehicles_passed: 0,
             max_velocity: 0.0,
-            min_velocity: f32::MAX,
+            min_velocity: 0.0,
             max_crossing_time: 0.0,
-            min_crossing_time: f32::MAX,
+            min_crossing_time: 0.0,
             close_calls: 0,
         }
     }
@@ -26,33 +26,43 @@ impl Statistics {
         if completed_vehicles.is_empty() {
             return;
         }
-        
+
         // Max vehicles that passed the intersection
         self.max_vehicles_passed = completed_vehicles.len();
-        
+
         // Calculate velocity stats from all vehicles
-        let max_speeds: Vec<f32> = completed_vehicles.iter().map(|v| v.max_speed_reached).collect();
-        let min_speeds: Vec<f32> = completed_vehicles.iter().map(|v| v.min_speed_reached).collect();
-        
+        let max_speeds: Vec<f32> = completed_vehicles
+            .iter()
+            .map(|v| v.max_speed_reached)
+            .collect();
+        let min_speeds: Vec<f32> = completed_vehicles
+            .iter()
+            .map(|v| v.min_speed_reached)
+            .collect();
+
         if !max_speeds.is_empty() {
             self.max_velocity = max_speeds.iter().fold(0.0f32, |a, &b| a.max(b));
         }
         if !min_speeds.is_empty() {
             self.min_velocity = min_speeds.iter().fold(f32::MAX, |a, &b| a.min(b));
         }
-        
+
         // Calculate crossing time stats (only vehicles that completed intersection)
-        let crossing_times: Vec<f32> = completed_vehicles.iter()
+        let crossing_times: Vec<f32> = completed_vehicles
+            .iter()
             .filter_map(|v| v.intersection_entry_time)
             .collect();
-            
+
         if !crossing_times.is_empty() {
             self.max_crossing_time = crossing_times.iter().fold(0.0f32, |a, &b| a.max(b));
             self.min_crossing_time = crossing_times.iter().fold(f32::MAX, |a, &b| a.min(b));
         }
-        
+
         // Count close calls
-        self.close_calls = completed_vehicles.iter().filter(|v| v.had_close_call).count();
+        self.close_calls = completed_vehicles
+            .iter()
+            .filter(|v| v.had_close_call)
+            .count();
     }
 
     pub fn calculate_simple_stats(&mut self, vehicles: &[Vehicle]) {
@@ -61,10 +71,10 @@ impl Statistics {
             let speeds: Vec<f32> = vehicles.iter().map(|v| v.speed).collect();
             self.max_velocity = speeds.iter().fold(0.0f32, |a, &b| a.max(b));
             self.min_velocity = speeds.iter().fold(f32::MAX, |a, &b| a.min(b));
-            
+
             // Count vehicles (simple count)
             self.max_vehicles_passed = vehicles.len();
-            
+
             // Simple close call detection (vehicles within safe distance)
             self.close_calls = 0;
             for (i, v1) in vehicles.iter().enumerate() {
@@ -83,7 +93,10 @@ impl Statistics {
         sdl2_manager.clear();
 
         let stats_lines = vec![
-            format!("Max Vehicles Passed the intersection: {}", self.max_vehicles_passed),
+            format!(
+                "Max Vehicles Passed the intersection: {}",
+                self.max_vehicles_passed
+            ),
             format!("Max Velocity: {:.2}", self.max_velocity),
             format!("Min Velocity: {:.2}", self.min_velocity),
             format!("Max Crossing Time: {:.2}", self.max_crossing_time),
