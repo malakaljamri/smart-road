@@ -1,7 +1,7 @@
-use crate::{input::InputHandler, render::{vehicle, Statistics}};
+use crate::{input::InputHandler, render::{vehicle, Statistics}, simulation::Simulation};
 
-pub fn traffic_manager(input: &mut InputHandler, vehicles: &mut Vec<vehicle::Vehicle>, statistics: &mut Statistics, completed_vehicles: &mut Vec<vehicle::Vehicle>) {
-    input.spawn_cars(vehicles);
+pub fn traffic_manager(input: &mut InputHandler, vehicles: &mut Vec<vehicle::Vehicle>, statistics: &mut Statistics, completed_vehicles: &mut Vec<vehicle::Vehicle>, simulation: &mut Simulation) {
+    input.spawn_cars(vehicles, simulation);
 
     // Track vehicles to remove
     let mut vehicles_to_remove: Vec<usize> = Vec::new();

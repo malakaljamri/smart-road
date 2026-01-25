@@ -1,4 +1,4 @@
-use crate::{render::Vehicle, traffic::Lane, types::Direction};
+use crate::{render::Vehicle, traffic::Lane, types::Direction, simulation::Simulation};
 use rand::Rng;
 use sdl2::keyboard::Keycode;
 
@@ -45,7 +45,7 @@ impl InputHandler {
         self.spawn_random = false;
     }
 
-    pub fn spawn_cars(&mut self, vehicles: &mut Vec<Vehicle>) {
+    pub fn spawn_cars(&mut self, vehicles: &mut Vec<Vehicle>, simulation: &mut Simulation) {
         let mut rng = rand::thread_rng();
 
         // function for random
@@ -76,7 +76,7 @@ impl InputHandler {
 
             if is_spawn_safe(x, 800.0, vehicles) {
                 let lane = Lane::set(Direction::South, random_dir);
-                let vehicle = Vehicle::new(vehicles.len(), x, 800.0, lane);
+                let vehicle = Vehicle::new(simulation.get_next_vehicle_id(), x, 800.0, lane);
                 println!("vehicle: {:?}", vehicle);
                 vehicles.push(vehicle);
             }
@@ -92,7 +92,7 @@ impl InputHandler {
 
             if is_spawn_safe(x, 0.0, vehicles) {
                 let lane = Lane::set(Direction::North, random_dir);
-                let vehicle = Vehicle::new(vehicles.len(), x, 0.0, lane);
+                let vehicle = Vehicle::new(simulation.get_next_vehicle_id(), x, 0.0, lane);
                 println!("vehicle: {:?}", vehicle);
                 vehicles.push(vehicle);
             }
@@ -108,7 +108,7 @@ impl InputHandler {
 
             if is_spawn_safe(800.0, y, vehicles) {
                 let lane = Lane::set(Direction::East, random_dir);
-                let vehicle = Vehicle::new(vehicles.len(), 800.0, y, lane);
+                let vehicle = Vehicle::new(simulation.get_next_vehicle_id(), 800.0, y, lane);
                 println!("vehicle: {:?}", vehicle);
                 vehicles.push(vehicle);
             }
@@ -124,7 +124,7 @@ impl InputHandler {
 
             if is_spawn_safe(0.0, y, vehicles) {
                 let lane = Lane::set(Direction::West, random_dir);
-                let vehicle = Vehicle::new(vehicles.len(), 0.0, y, lane);
+                let vehicle = Vehicle::new(simulation.get_next_vehicle_id(), 0.0, y, lane);
                 println!("vehicle: {:?}", vehicle);
                 vehicles.push(vehicle);
             }

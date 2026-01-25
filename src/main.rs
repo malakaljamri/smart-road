@@ -2,10 +2,12 @@ mod input;
 mod render;
 mod traffic;
 mod types;
+mod simulation;
 
 use crate::{
     input::InputHandler,
     render::{Statistics, TextureCache, draw_roads},
+    simulation::Simulation,
 };
 use render::{Sdl2Manager, Vehicle};
 use sdl2::{image::InitFlag, render::TextureCreator};
@@ -20,6 +22,7 @@ car width = 30px
 fn main() {
     sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "1");
 
+    let mut simulation = Simulation::new();
     let mut vehicles: Vec<Vehicle> = Vec::new();
     let mut completed_vehicles: Vec<Vehicle> = Vec::new();
 
@@ -93,7 +96,7 @@ fn main() {
 
         draw_roads(&mut sdl2_manager, &font, &texture_creator);
 
-        traffic_manager(&mut input, &mut vehicles, &mut statistics, &mut completed_vehicles);
+        traffic_manager(&mut input, &mut vehicles, &mut statistics, &mut completed_vehicles, &mut simulation);
 
         Vehicle::render(&vehicles, &texture_cache, &mut sdl2_manager);
 
