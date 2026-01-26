@@ -1,6 +1,7 @@
 use crate::{render::Vehicle, traffic::Lane, types::Direction, simulation::Simulation};
 use rand::Rng;
 use sdl2::keyboard::Keycode;
+use std::time::{Duration, Instant};
 
 pub struct InputHandler {
     pub quit: bool,
@@ -9,6 +10,8 @@ pub struct InputHandler {
     pub spawn_east: bool,
     pub spawn_west: bool,
     pub spawn_random: bool,
+    pub random_interval_ms: u64,
+    pub random_last: Instant,
 }
 
 impl InputHandler {
@@ -20,6 +23,8 @@ impl InputHandler {
             spawn_east: false,
             spawn_west: false,
             spawn_random: false,
+            random_interval_ms: 500,
+            random_last: Instant::now(),
         }
     }
 
@@ -31,7 +36,8 @@ impl InputHandler {
             Keycode::Right => self.spawn_west = true,
             Keycode::Left => self.spawn_east = true,
             Keycode::R => {
-                self.spawn_random = true;
+                self.spawn_random = !self.spawn_random;
+                println!("random_mode: {}", self.spawn_random);
             }
             _ => {}
         }
@@ -42,7 +48,7 @@ impl InputHandler {
         self.spawn_south = false;
         self.spawn_east = false;
         self.spawn_west = false;
-        self.spawn_random = false;
+        // self.spawn_random = false;
     }
 
     pub fn spawn_cars(&mut self, vehicles: &mut Vec<Vehicle>, simulation: &mut Simulation) {
@@ -50,11 +56,21 @@ impl InputHandler {
 
         // function for random
         if self.spawn_random {
-            match rng.gen_range(0..4) {
-                0 => self.spawn_north = true,
-                1 => self.spawn_south = true,
-                2 => self.spawn_east = true,
-                _ => self.spawn_west = true,
+            let now = Instant::now();
+            if now.duration_since(self.random_last) >= Duration::from_millis(self.random_interval_ms) {
+                self.spawn_north = false;
+                self.spawn_south = false;
+                self.spawn_east = false;
+                self.spawn_west = false;
+
+                match rng.gen_range(0..4) {
+                    0 => self.spawn_north = true,
+                    1 => self.spawn_south = true,
+                    2 => self.spawn_east = true,
+                    _ => self.spawn_west = true,
+                }
+
+                self.random_last = now;
             }
         }
 
