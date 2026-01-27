@@ -14,7 +14,7 @@ impl Collision {
             vehicle_id,
             x,
             y,
-            safe_distance: 40.0,
+            safe_distance: 60.0,
         }
     }
 
