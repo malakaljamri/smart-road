@@ -38,12 +38,12 @@ cd smart-road
 
 2. Build the project:
 ```bash
-cargo build --release
+cargo build 
 ```
 
 3. Run the simulation:
 ```bash
-cargo run --release
+cargo run 
 ```
 
 ## Controls
@@ -125,18 +125,6 @@ smart-road/
 - Platform-specific SDL2 features:
   - `image`: PNG image support
   - `ttf`: TrueType font rendering
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## License
-
-This project is open source. Please see the LICENSE file for details.
 
 ## Future Enhancements
 
