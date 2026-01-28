@@ -1,4 +1,5 @@
 use crate::{input::InputHandler, render::{vehicle, Statistics}, simulation::Simulation};
+use crate::traffic::Collision;
 
 pub fn traffic_manager(input: &mut InputHandler, vehicles: &mut Vec<vehicle::Vehicle>, statistics: &mut Statistics, completed_vehicles: &mut Vec<vehicle::Vehicle>, simulation: &mut Simulation) {
     input.spawn_cars(vehicles, simulation);
@@ -15,9 +16,12 @@ pub fn traffic_manager(input: &mut InputHandler, vehicles: &mut Vec<vehicle::Veh
         // Check for close calls (vehicles within safe distance)
         for other in &vehicles_clone {
             if other.id != vehicles[i].id {
-                let distance = ((vehicles[i].x - other.x).powi(2) + (vehicles[i].y - other.y).powi(2)).sqrt();
-                if distance < vehicles[i].collision.safe_distance {
-                    vehicles[i].had_close_call = true;
+                // let distance = ((vehicles[i].x - other.x).powi(2) + (vehicles[i].y - other.y).powi(2)).sqrt();
+                if Collision::is_vehicle_in_intersection(&vehicles[i]) || Collision::is_vehicle_in_intersection(other) {
+                    if Collision::is_vehicle_in_path(&vehicles[i], other, vehicles[i].collision.safe_distance) {
+                        vehicles[i].had_close_call = true;
+                        println!("close one there buddy")
+                    }
                 }
             }
         }
