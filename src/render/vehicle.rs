@@ -229,7 +229,7 @@ impl Vehicle {
                 if self.state == VehicleState::Crossing {
                     match self.lane.to {
                         Direction::North => {
-                            if self.x >= 395.0 {
+                            if self.x >= 400.5 {
                                 self.direction = Direction::North
                             }
                         }
