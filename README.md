@@ -132,4 +132,4 @@ smart-road/
 - Vehicle speed variation
 - More complex intersection layouts
 - Performance statistics and metrics
-- Save/load simulation states
+- Save/load simulation state
