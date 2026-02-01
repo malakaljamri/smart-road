@@ -14,7 +14,7 @@ impl Collision {
             vehicle_id,
             x,
             y,
-            safe_distance: 60.0,
+            safe_distance: 80.0, // Increased from 60.0 for safer following distance
         }
     }
 
@@ -28,7 +28,8 @@ impl Collision {
     }
 
     pub fn check_vehicle_ahead<'a>(vehicle: &'a Vehicle, vehicles: &'a [Vehicle]) -> Option<&'a Vehicle> {
-        let check_distance = vehicle.collision.safe_distance + 20.0;
+        // Increased check distance for earlier detection
+        let check_distance = vehicle.collision.safe_distance + 40.0; // Increased from 20.0
         
         vehicles.iter().find(|other| {
             other.id != vehicle.id && Collision::is_vehicle_in_path(vehicle, other, check_distance)
@@ -42,17 +43,19 @@ impl Collision {
             return false;
         }
 
+        // Increased lateral tolerance from 20.0 to 25.0 for more safety margin
         match vehicle.direction {
-            Direction::North => other.y < vehicle.y && (other.x - vehicle.x).abs() < 20.0,
-            Direction::South => other.y > vehicle.y && (other.x - vehicle.x).abs() < 20.0,
-            Direction::East => other.x > vehicle.x && (other.y - vehicle.y).abs() < 20.0,
-            Direction::West => other.x < vehicle.x && (other.y - vehicle.y).abs() < 20.0,
+            Direction::North => other.y < vehicle.y && (other.x - vehicle.x).abs() < 25.0,
+            Direction::South => other.y > vehicle.y && (other.x - vehicle.x).abs() < 25.0,
+            Direction::East => other.x > vehicle.x && (other.y - vehicle.y).abs() < 25.0,
+            Direction::West => other.x < vehicle.x && (other.y - vehicle.y).abs() < 25.0,
         }
     }
 
     pub fn is_vehicle_in_intersection(vehicle: &Vehicle) -> bool {
-        // Check if vehicle is within intersection bounds (295-505 on both axes)
-        vehicle.x >= 295.0 && vehicle.x <= 505.0 && vehicle.y >= 295.0 && vehicle.y <= 505.0
+        // Added safety buffer around intersection bounds
+        // Original: 295-505, Now: 285-515 (10 unit buffer)
+        vehicle.x >= 285.0 && vehicle.x <= 515.0 && vehicle.y >= 285.0 && vehicle.y <= 515.0
     }
 
     pub fn count_vehicles_in_intersection(vehicles: &[Vehicle], exclude_id: usize) -> usize {
@@ -64,9 +67,9 @@ impl Collision {
     }
 
     pub fn should_wait_for_intersection(vehicle: &Vehicle, vehicles: &[Vehicle]) -> bool {
-        // Allow up to 4 vehicles in the entire intersection area
+        // Reduced maximum vehicles in intersection from 4 to 3 for safer spacing
         let vehicles_in_intersection = Self::count_vehicles_in_intersection(vehicles, vehicle.id);
-        vehicles_in_intersection >= 4
+        vehicles_in_intersection >= 2 // Changed from 4
     }
 }
 
