@@ -129,10 +129,10 @@ impl Vehicle {
         }
 
         let is_in_intersection_bounds = [
-            self.direction == Direction::South && self.y >= 295.0 && self.y <= 505.0,
-            self.direction == Direction::North && self.y <= 505.0 && self.y >= 295.0,
-            self.direction == Direction::East && self.x >= 295.0 && self.x <= 505.0,
-            self.direction == Direction::West && self.x <= 505.0 && self.x >= 295.0,
+            self.direction == Direction::South && self.y >= 250.0 && self.y <= 550.0,
+            self.direction == Direction::North && self.y <= 550.0 && self.y >= 250.0,
+            self.direction == Direction::East && self.x >= 250.0 && self.x <= 550.0,
+            self.direction == Direction::West && self.x <= 550.0 && self.x >= 250.0,
         ];
 
         // Had to improve this by separating the condition for each direction

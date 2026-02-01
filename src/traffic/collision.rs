@@ -53,9 +53,9 @@ impl Collision {
     }
 
     pub fn is_vehicle_in_intersection(vehicle: &Vehicle) -> bool {
-        // Added safety buffer around intersection bounds
-        // Original: 295-505, Now: 285-515 (10 unit buffer)
-        vehicle.x >= 285.0 && vehicle.x <= 515.0 && vehicle.y >= 285.0 && vehicle.y <= 515.0
+        // Made intersection bigger to reduce close calls
+        // Original: 295-505, Now: 250-550 (50px larger on each side)
+        vehicle.x >= 250.0 && vehicle.x <= 550.0 && vehicle.y >= 250.0 && vehicle.y <= 550.0
     }
 
     pub fn count_vehicles_in_intersection(vehicles: &[Vehicle], exclude_id: usize) -> usize {
