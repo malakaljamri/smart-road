@@ -1,4 +1,5 @@
 use crate::render::Vehicle;
+use crate::types::Direction;
 
 #[derive(Debug, Clone)]
 pub struct Collision {
@@ -9,12 +10,30 @@ pub struct Collision {
 }
 
 impl Collision {
+    fn is_perpendicular(a: Direction, b: Direction) -> bool {
+        matches!(a, Direction::North | Direction::South)
+            && matches!(b, Direction::East | Direction::West)
+            || matches!(a, Direction::East | Direction::West)
+                && matches!(b, Direction::North | Direction::South)
+    }
+
+    fn has_conflicting_vehicle_in_intersection(
+        vehicles: &[Vehicle],
+        exclude_id: usize,
+        direction: Direction,
+    ) -> bool {
+        vehicles.iter().any(|v| {
+            v.id != exclude_id
+                && Self::is_vehicle_in_intersection(v)
+                && Self::is_perpendicular(direction, v.direction)
+        })
+    }
     pub fn new(vehicle_id: i32, x: f32, y: f32) -> Self {
         Self {
             vehicle_id,
             x,
             y,
-            safe_distance: 80.0, // Increased from 60.0 for safer following distance
+            safe_distance: 40.0,
         }
     }
 
@@ -23,54 +42,72 @@ impl Collision {
             return false;
         }
 
-        let distance = ((vehicle1.x - vehicle2.x).powi(2) + (vehicle1.y - vehicle2.y).powi(2)).sqrt();
+        let distance =
+            ((vehicle1.x - vehicle2.x).powi(2) + (vehicle1.y - vehicle2.y).powi(2)).sqrt();
         distance < vehicle1.collision.safe_distance
     }
 
-    pub fn check_vehicle_ahead<'a>(vehicle: &'a Vehicle, vehicles: &'a [Vehicle]) -> Option<&'a Vehicle> {
-        // Increased check distance for earlier detection
-        let check_distance = vehicle.collision.safe_distance + 40.0; // Increased from 20.0
-        
+    pub fn check_vehicle_ahead<'a>(
+        vehicle: &'a Vehicle,
+        vehicles: &'a [Vehicle],
+    ) -> Option<&'a Vehicle> {
+        let check_distance = vehicle.collision.safe_distance + 20.0;
+
         vehicles.iter().find(|other| {
-            other.id != vehicle.id && Collision::is_vehicle_in_path(vehicle, other, check_distance)
+            other.id != vehicle.id
+                && other.lane.from == vehicle.lane.from
+                && other.lane.to == vehicle.lane.to
+                && Collision::is_vehicle_in_path(vehicle, other, check_distance)
         })
     }
 
     pub fn is_vehicle_in_path(vehicle: &Vehicle, other: &Vehicle, check_distance: f32) -> bool {
         let distance = ((vehicle.x - other.x).powi(2) + (vehicle.y - other.y).powi(2)).sqrt();
-        
+
         if distance > check_distance {
             return false;
         }
 
-        // Increased lateral tolerance from 20.0 to 25.0 for more safety margin
         match vehicle.direction {
-            Direction::North => other.y < vehicle.y && (other.x - vehicle.x).abs() < 25.0,
-            Direction::South => other.y > vehicle.y && (other.x - vehicle.x).abs() < 25.0,
-            Direction::East => other.x > vehicle.x && (other.y - vehicle.y).abs() < 25.0,
-            Direction::West => other.x < vehicle.x && (other.y - vehicle.y).abs() < 25.0,
+            Direction::North => other.y < vehicle.y && (other.x - vehicle.x).abs() < 20.0,
+            Direction::South => other.y > vehicle.y && (other.x - vehicle.x).abs() < 20.0,
+            Direction::East => other.x > vehicle.x && (other.y - vehicle.y).abs() < 20.0,
+            Direction::West => other.x < vehicle.x && (other.y - vehicle.y).abs() < 20.0,
         }
     }
 
     pub fn is_vehicle_in_intersection(vehicle: &Vehicle) -> bool {
-        // Made intersection bigger to reduce close calls
-        // Original: 295-505, Now: 250-550 (50px larger on each side)
-        vehicle.x >= 250.0 && vehicle.x <= 550.0 && vehicle.y >= 250.0 && vehicle.y <= 550.0
+        // Keep intersection bounds consistent with vehicle logic (295-505 on both axes)
+        vehicle.x >= 295.0 && vehicle.x <= 505.0 && vehicle.y >= 295.0 && vehicle.y <= 505.0
     }
 
     pub fn count_vehicles_in_intersection(vehicles: &[Vehicle], exclude_id: usize) -> usize {
-        vehicles.iter().filter(|v| v.id != exclude_id && Self::is_vehicle_in_intersection(v)).count()
+        vehicles
+            .iter()
+            .filter(|v| v.id != exclude_id && Self::is_vehicle_in_intersection(v))
+            .count()
     }
 
     pub fn has_vehicle_in_intersection(vehicles: &[Vehicle], exclude_id: usize) -> bool {
-        vehicles.iter().any(|v| v.id != exclude_id && Self::is_vehicle_in_intersection(v))
+        vehicles
+            .iter()
+            .any(|v| v.id != exclude_id && Self::is_vehicle_in_intersection(v))
     }
 
     pub fn should_wait_for_intersection(vehicle: &Vehicle, vehicles: &[Vehicle]) -> bool {
-        // Reduced maximum vehicles in intersection from 4 to 3 for safer spacing
-        let vehicles_in_intersection = Self::count_vehicles_in_intersection(vehicles, vehicle.id);
-        vehicles_in_intersection >= 2 // Changed from 4
+        // Right-turning vehicles can proceed without waiting
+        let is_right_turn = match vehicle.lane.from {
+            Direction::North => vehicle.lane.to == Direction::West,
+            Direction::South => vehicle.lane.to == Direction::East,
+            Direction::East => vehicle.lane.to == Direction::North,
+            Direction::West => vehicle.lane.to == Direction::South,
+        };
+
+        if is_right_turn {
+            return false;
+        }
+
+        // Straight and left-turning vehicles must wait if intersection is occupied
+        Self::has_vehicle_in_intersection(vehicles, vehicle.id)
     }
 }
-
-use crate::types::Direction;

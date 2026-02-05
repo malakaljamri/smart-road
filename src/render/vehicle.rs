@@ -43,7 +43,7 @@ impl Vehicle {
 
         let mut rng = rand::thread_rng();
         let random_speed = rng.gen_range(0.8..1.2);
-        
+
         Vehicle {
             id,
             x,
@@ -65,9 +65,19 @@ impl Vehicle {
         // Intersection center is at (400, 400)
         let intersection_center_x = 400.0;
         let intersection_center_y = 400.0;
-        
+
         // Calculate Euclidean distance to intersection center
         ((self.x - intersection_center_x).powi(2) + (self.y - intersection_center_y).powi(2)).sqrt()
+    }
+
+    pub fn is_at_intersection_boundary(&self) -> bool {
+        // Intersection boundaries are at 295 and 505
+        match self.direction {
+            Direction::South => self.y >= 285.0,
+            Direction::North => self.y <= 515.0,
+            Direction::East => self.x >= 285.0,
+            Direction::West => self.x <= 515.0,
+        }
     }
 
     pub fn update(&mut self, vehicles: &[Vehicle]) {
@@ -85,15 +95,19 @@ impl Vehicle {
             target_speed = 1.5 * braking_ratio;
         }
 
-        // Check for intersection mutual exclusion (only if approaching and not close enough to enter)
-        if self.state == VehicleState::Approaching && distance_to_intersection > 30.0 && Collision::should_wait_for_intersection(self, vehicles) {
+        // Check for intersection mutual exclusion (only if at boundary)
+        if self.state == VehicleState::Approaching
+            && self.is_at_intersection_boundary()
+            && Collision::should_wait_for_intersection(self, vehicles)
+        {
             self.state = VehicleState::Waiting;
             target_speed = 0.0;
         }
 
         // Check for vehicles ahead and adjust target speed
         if let Some(vehicle_ahead) = Collision::check_vehicle_ahead(self, vehicles) {
-            let distance = ((self.x - vehicle_ahead.x).powi(2) + (self.y - vehicle_ahead.y).powi(2)).sqrt();
+            let distance =
+                ((self.x - vehicle_ahead.x).powi(2) + (self.y - vehicle_ahead.y).powi(2)).sqrt();
 
             if distance < self.collision.safe_distance {
                 self.state = VehicleState::Waiting;
@@ -116,12 +130,11 @@ impl Vehicle {
 
         // If waiting, don't move
         if self.state == VehicleState::Waiting {
-            // Check if path is clear and either intersection is available or we're close enough to enter
+            // Check if path is clear and intersection is available
             let path_clear = Collision::check_vehicle_ahead(self, vehicles).is_none();
             let intersection_available = !Collision::should_wait_for_intersection(self, vehicles);
-            let can_enter = distance_to_intersection <= 30.0; // Close enough to claim intersection
-            
-            if path_clear && (intersection_available || can_enter) {
+
+            if path_clear && intersection_available {
                 self.state = VehicleState::Approaching;
             } else {
                 return;
@@ -129,10 +142,10 @@ impl Vehicle {
         }
 
         let is_in_intersection_bounds = [
-            self.direction == Direction::South && self.y >= 250.0 && self.y <= 550.0,
-            self.direction == Direction::North && self.y <= 550.0 && self.y >= 250.0,
-            self.direction == Direction::East && self.x >= 250.0 && self.x <= 550.0,
-            self.direction == Direction::West && self.x <= 550.0 && self.x >= 250.0,
+            self.direction == Direction::South && self.y >= 295.0 && self.y <= 505.0,
+            self.direction == Direction::North && self.y <= 505.0 && self.y >= 295.0,
+            self.direction == Direction::East && self.x >= 295.0 && self.x <= 505.0,
+            self.direction == Direction::West && self.x <= 505.0 && self.x >= 295.0,
         ];
 
         // Had to improve this by separating the condition for each direction
@@ -243,11 +256,11 @@ impl Vehicle {
                 }
             }
         }
-        
+
         // Track speed statistics
         self.max_speed_reached = self.max_speed_reached.max(self.speed);
         self.min_speed_reached = self.min_speed_reached.min(self.speed);
-        
+
         // Increment intersection time if vehicle is in intersection
         if let Some(ref mut entry_time) = self.intersection_entry_time {
             *entry_time += 1.0; // Increment by 1 frame
