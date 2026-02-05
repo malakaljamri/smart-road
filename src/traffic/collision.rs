@@ -10,24 +10,6 @@ pub struct Collision {
 }
 
 impl Collision {
-    fn is_perpendicular(a: Direction, b: Direction) -> bool {
-        matches!(a, Direction::North | Direction::South)
-            && matches!(b, Direction::East | Direction::West)
-            || matches!(a, Direction::East | Direction::West)
-                && matches!(b, Direction::North | Direction::South)
-    }
-
-    fn has_conflicting_vehicle_in_intersection(
-        vehicles: &[Vehicle],
-        exclude_id: usize,
-        direction: Direction,
-    ) -> bool {
-        vehicles.iter().any(|v| {
-            v.id != exclude_id
-                && Self::is_vehicle_in_intersection(v)
-                && Self::is_perpendicular(direction, v.direction)
-        })
-    }
     pub fn new(vehicle_id: i32, x: f32, y: f32) -> Self {
         Self {
             vehicle_id,
@@ -35,16 +17,6 @@ impl Collision {
             y,
             safe_distance: 40.0,
         }
-    }
-
-    pub fn check_collision(vehicle1: &Vehicle, vehicle2: &Vehicle) -> bool {
-        if vehicle1.id == vehicle2.id {
-            return false;
-        }
-
-        let distance =
-            ((vehicle1.x - vehicle2.x).powi(2) + (vehicle1.y - vehicle2.y).powi(2)).sqrt();
-        distance < vehicle1.collision.safe_distance
     }
 
     pub fn check_vehicle_ahead<'a>(
@@ -79,13 +51,6 @@ impl Collision {
     pub fn is_vehicle_in_intersection(vehicle: &Vehicle) -> bool {
         // Keep intersection bounds consistent with vehicle logic (295-505 on both axes)
         vehicle.x >= 295.0 && vehicle.x <= 505.0 && vehicle.y >= 295.0 && vehicle.y <= 505.0
-    }
-
-    pub fn count_vehicles_in_intersection(vehicles: &[Vehicle], exclude_id: usize) -> usize {
-        vehicles
-            .iter()
-            .filter(|v| v.id != exclude_id && Self::is_vehicle_in_intersection(v))
-            .count()
     }
 
     pub fn has_vehicle_in_intersection(vehicles: &[Vehicle], exclude_id: usize) -> bool {
