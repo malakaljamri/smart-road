@@ -78,15 +78,22 @@ impl Vehicle {
         // Calculate target speed based on conditions
         let mut target_speed = 1.5; // Default cruising speed
         let distance_to_intersection = self.distance_to_intersection();
+        // println!("{}", distance_to_intersection);
+        // println!("{:?}", self.state);
 
         // Slow down when approaching intersection
-        if distance_to_intersection < 150.0 && self.state == VehicleState::Approaching {
-            let braking_ratio = (distance_to_intersection / 150.0).max(0.3);
-            target_speed = 1.5 * braking_ratio;
-        }
+        //todo: uncomment later
+        // if distance_to_intersection < 150.0 && self.state == VehicleState::Approaching {
+        //     let braking_ratio = (distance_to_intersection / 150.0).max(0.3);
+        //     target_speed = 1.5 * braking_ratio;
+        //     println!("collision.rs: line 87: changed speed: {}", target_speed);
+        // }
 
         // Check for intersection mutual exclusion (only if approaching and not close enough to enter)
-        if self.state == VehicleState::Approaching && distance_to_intersection > 30.0 && Collision::should_wait_for_intersection(self, vehicles) {
+        if self.state == VehicleState::Approaching
+            && distance_to_intersection <= 125.0
+            // && Collision::should_wait_for_intersection(self, vehicles)
+        {
             self.state = VehicleState::Waiting;
             target_speed = 0.0;
         }
@@ -98,6 +105,7 @@ impl Vehicle {
             if distance < self.collision.safe_distance {
                 self.state = VehicleState::Waiting;
                 target_speed = 0.0;
+                println!("Updated vehicle {} state: Waiting", self.id);
             } else if distance < self.collision.safe_distance + 30.0 {
                 // Slow down proportionally based on distance
                 let ratio = (distance - self.collision.safe_distance) / 30.0;
@@ -106,23 +114,26 @@ impl Vehicle {
         }
 
         // Smoothly interpolate towards target speed
-        if target_speed > self.speed {
-            // Accelerate
-            self.speed = (self.speed + 0.15).min(target_speed).min(2.0);
-        } else if target_speed < self.speed {
-            // Decelerate
-            self.speed = (self.speed - 0.2).max(target_speed).max(0.3);
-        }
+        // if target_speed > self.speed {
+        //     // Accelerate
+        //     self.speed = (self.speed + 0.15).min(target_speed).min(2.0);
+        // } else if target_speed < self.speed {
+        //     // Decelerate
+        //     self.speed = (self.speed - 0.2).max(target_speed).max(0.3);
+        // }
+
+        self.speed = target_speed;
 
         // If waiting, don't move
         if self.state == VehicleState::Waiting {
             // Check if path is clear and either intersection is available or we're close enough to enter
             let path_clear = Collision::check_vehicle_ahead(self, vehicles).is_none();
             let intersection_available = !Collision::should_wait_for_intersection(self, vehicles);
-            let can_enter = distance_to_intersection <= 30.0; // Close enough to claim intersection
+            let can_enter = distance_to_intersection <= 125.0; // Close enough to claim intersection
             
             if path_clear && (intersection_available || can_enter) {
                 self.state = VehicleState::Approaching;
+                println!("Updated vehicle {} state: Approaching", self.id);
             } else {
                 return;
             }
@@ -142,7 +153,7 @@ impl Vehicle {
                 self.intersection_entry_time = Some(0.0);
             }
             self.state = VehicleState::Crossing;
-        } else if self.state == VehicleState::Approaching && distance_to_intersection < 50.0 {
+        } else if self.state == VehicleState::Approaching && distance_to_intersection < 100.0 {
             // Transition to Crossing state when very close to intersection
             self.state = VehicleState::Crossing;
             self.intersection_entry_time = Some(0.0);
