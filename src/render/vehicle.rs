@@ -70,13 +70,12 @@ impl Vehicle {
         ((self.x - intersection_center_x).powi(2) + (self.y - intersection_center_y).powi(2)).sqrt()
     }
 
-    pub fn is_at_intersection_boundary(&self) -> bool {
-        // Intersection boundaries are at 295 and 505
+    fn distance_to_stop_line(&self) -> f32 {
         match self.direction {
-            Direction::South => self.y >= 285.0,
-            Direction::North => self.y <= 515.0,
-            Direction::East => self.x >= 285.0,
-            Direction::West => self.x <= 515.0,
+            Direction::South => 265.0 - self.y,
+            Direction::North => self.y - 535.0,
+            Direction::East => 265.0 - self.x,
+            Direction::West => self.x - 535.0,
         }
     }
 
@@ -88,16 +87,26 @@ impl Vehicle {
         // Calculate target speed based on conditions
         let mut target_speed = 1.5; // Default cruising speed
         let distance_to_intersection = self.distance_to_intersection();
+        let distance_to_stop_line = self.distance_to_stop_line();
 
         // Slow down when approaching intersection
-        if distance_to_intersection < 150.0 && self.state == VehicleState::Approaching {
-            let braking_ratio = (distance_to_intersection / 150.0).max(0.3);
-            target_speed = 1.5 * braking_ratio;
+        if self.state == VehicleState::Approaching {
+            let braking_distance = 140.0;
+            if distance_to_stop_line < braking_distance {
+                let braking_ratio = (distance_to_stop_line / braking_distance).max(0.2);
+                target_speed = 1.5 * braking_ratio;
+            } else if distance_to_intersection < 150.0 {
+                let braking_ratio = (distance_to_intersection / 150.0).max(0.3);
+                target_speed = 1.5 * braking_ratio;
+            }
         }
 
         // Check for intersection mutual exclusion (only if at boundary)
+        let in_intersection = Collision::is_vehicle_in_intersection(self);
+
         if self.state == VehicleState::Approaching
-            && self.is_at_intersection_boundary()
+            && distance_to_stop_line <= 0.0
+            && !in_intersection
             && Collision::should_wait_for_intersection(self, vehicles)
         {
             self.state = VehicleState::Waiting;
@@ -141,24 +150,12 @@ impl Vehicle {
             }
         }
 
-        let is_in_intersection_bounds = [
-            self.direction == Direction::South && self.y >= 295.0 && self.y <= 505.0,
-            self.direction == Direction::North && self.y <= 505.0 && self.y >= 295.0,
-            self.direction == Direction::East && self.x >= 295.0 && self.x <= 505.0,
-            self.direction == Direction::West && self.x <= 505.0 && self.x >= 295.0,
-        ];
-
-        // Had to improve this by separating the condition for each direction
-        if is_in_intersection_bounds.iter().any(|&x| x) {
+        if Collision::is_vehicle_in_intersection(self) {
             if self.intersection_entry_time.is_none() {
                 // Vehicle just entered intersection - start timing
                 self.intersection_entry_time = Some(0.0);
             }
             self.state = VehicleState::Crossing;
-        } else if self.state == VehicleState::Approaching && distance_to_intersection < 50.0 {
-            // Transition to Crossing state when very close to intersection
-            self.state = VehicleState::Crossing;
-            self.intersection_entry_time = Some(0.0);
         }
 
         //TODO: Implement proper logic
