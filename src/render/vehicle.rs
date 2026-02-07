@@ -53,7 +53,7 @@ impl Vehicle {
             direction: start_dir,
             lane,
             state: VehicleState::Approaching,
-            collision: Collision::new(id as i32, x, y),
+            collision: Collision::new(x, y),
             intersection_entry_time: None,
             max_speed_reached: random_speed,
             min_speed_reached: random_speed,
