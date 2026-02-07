@@ -32,7 +32,7 @@ Dependencies are bundled automatically via Cargo.
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/malakaljamri/smart-road.git
 cd smart-road
 ```
 
