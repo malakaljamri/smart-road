@@ -4,6 +4,7 @@ use crate::traffic::Lane;
 use crate::traffic::collision::Collision;
 use crate::types::{Direction, VehicleColor, VehicleState};
 use sdl2::rect::Rect;
+use std::time::Instant;
 
 use rand::Rng;
 
@@ -18,7 +19,8 @@ pub struct Vehicle {
     pub color: VehicleColor,
     pub speed: f32,
     pub collision: Collision,
-    pub intersection_entry_time: Option<f32>,
+    pub intersection_enter_time: Instant,
+    pub intersection_exit_time: Option<f32>,
     pub max_speed_reached: f32,
     pub min_speed_reached: f32,
     pub had_close_call: bool,
@@ -54,7 +56,8 @@ impl Vehicle {
             lane,
             state: VehicleState::Approaching,
             collision: Collision::new(x, y),
-            intersection_entry_time: None,
+            intersection_enter_time: Instant::now(),
+            intersection_exit_time: None,
             max_speed_reached: random_speed,
             min_speed_reached: random_speed,
             had_close_call: false,
@@ -150,13 +153,14 @@ impl Vehicle {
             }
         }
 
-        if Collision::is_vehicle_in_intersection(self) {
-            if self.intersection_entry_time.is_none() {
-                // Vehicle just entered intersection - start timing
-                self.intersection_entry_time = Some(0.0);
-            }
+        if Collision::is_vehicle_in_intersection(self) && self.state != VehicleState::Crossing {
             self.state = VehicleState::Crossing;
         }
+
+        // if self.state == VehicleState::Exiting && self.intersection_exit_time.is_none() {
+        //     self.intersection_exit_time =
+        //         Some(self.intersection_enter_time.elapsed().as_secs_f32());
+        // }
 
         //TODO: Implement proper logic
         match self.direction {
@@ -257,11 +261,6 @@ impl Vehicle {
         // Track speed statistics
         self.max_speed_reached = self.max_speed_reached.max(self.speed);
         self.min_speed_reached = self.min_speed_reached.min(self.speed);
-
-        // Increment intersection time if vehicle is in intersection
-        if let Some(ref mut entry_time) = self.intersection_entry_time {
-            *entry_time += 1.0; // Increment by 1 frame
-        }
     }
 
     pub fn render(

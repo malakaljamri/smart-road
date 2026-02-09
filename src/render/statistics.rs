@@ -50,7 +50,7 @@ impl Statistics {
         // Calculate crossing time stats (only vehicles that completed intersection)
         let crossing_times: Vec<f32> = completed_vehicles
             .iter()
-            .filter_map(|v| v.intersection_entry_time)
+            .filter_map(|v| v.intersection_exit_time)
             .collect();
 
         if !crossing_times.is_empty() {
@@ -65,30 +65,6 @@ impl Statistics {
             .count();
     }
 
-    // pub fn calculate_simple_stats(&mut self, vehicles: &[Vehicle]) {
-    //     if !vehicles.is_empty() {
-    //         // Calculate velocity stats from current speeds
-    //         let speeds: Vec<f32> = vehicles.iter().map(|v| v.speed).collect();
-    //         self.max_velocity = speeds.iter().fold(0.0f32, |a, &b| a.max(b));
-    //         self.min_velocity = speeds.iter().fold(f32::MAX, |a, &b| a.min(b));
-
-    //         // Count vehicles (simple count)
-    //         self.max_vehicles_passed = vehicles.len();
-
-    //         // Simple close call detection (vehicles within safe distance)
-    //         self.close_calls = 0;
-    //         for (i, v1) in vehicles.iter().enumerate() {
-    //             for v2 in vehicles.iter().skip(i + 1) {
-    //                 let distance = ((v1.x - v2.x).powi(2) + (v1.y - v2.y).powi(2)).sqrt();
-    //                 if distance < v1.collision.safe_distance {
-    //                     self.close_calls += 1;
-    //                     break;
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
     pub fn render_stats(&self, sdl2_manager: &mut Sdl2Manager, font: &sdl2::ttf::Font) {
         sdl2_manager.clear();
 
@@ -99,8 +75,8 @@ impl Statistics {
             ),
             format!("Max Velocity: {:.2}", self.max_velocity),
             format!("Min Velocity: {:.2}", self.min_velocity),
-            format!("Max Crossing Time: {:.2}", self.max_crossing_time),
-            format!("Min Crossing Time: {:.2}", self.min_crossing_time),
+            format!("Max Crossing Time: {:.2} s", self.max_crossing_time),
+            format!("Min Crossing Time: {:.2} s", self.min_crossing_time),
             format!("Close Calls: {}", self.close_calls),
             format!("Press ESC to Exit"),
         ];
