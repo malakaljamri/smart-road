@@ -157,7 +157,6 @@ impl Vehicle {
             self.state = VehicleState::Crossing;
         }
 
-        //TODO: Implement proper logic
         match self.direction {
             Direction::North => {
                 self.y -= self.speed;
