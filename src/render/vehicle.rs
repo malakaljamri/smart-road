@@ -157,11 +157,6 @@ impl Vehicle {
             self.state = VehicleState::Crossing;
         }
 
-        // if self.state == VehicleState::Exiting && self.intersection_exit_time.is_none() {
-        //     self.intersection_exit_time =
-        //         Some(self.intersection_enter_time.elapsed().as_secs_f32());
-        // }
-
         //TODO: Implement proper logic
         match self.direction {
             Direction::North => {
